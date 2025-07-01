@@ -18,8 +18,8 @@ const FrontViewStep: React.FC<FrontViewStepProps> = ({ onContinue }) => {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const containerRef = useRef<HTMLDivElement>(null);
 	const { poseResult, startDetection, stopDetection } = usePoseDetection(videoRef, canvasRef, frontPose, {
-		maxOffsetX: 50,
-		maxOffsetY: 50
+		maxOffsetX: 150,
+		maxOffsetY: 150
 	});
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const [poseStableTime, setPoseStableTime] = useState(0);
@@ -38,13 +38,17 @@ const FrontViewStep: React.FC<FrontViewStepProps> = ({ onContinue }) => {
 			// Create canvas to capture the video frame
 			const canvas = document.createElement('canvas');
 			const video = videoRef.current;
-			const context = canvas.getContext('2d');
+			const context = canvas.getContext('2d', { alpha: false });
 
 			if (!context) return;
 
 			// Set canvas size to match video
 			canvas.width = video.videoWidth;
 			canvas.height = video.videoHeight;
+
+			// Enable high quality rendering
+			context.imageSmoothingEnabled = true;
+			context.imageSmoothingQuality = 'high';
 
 			// Flip the context horizontally to correct the mirror effect
 			context.scale(-1, 1);
@@ -61,14 +65,15 @@ const FrontViewStep: React.FC<FrontViewStepProps> = ({ onContinue }) => {
 						const imageUrl = URL.createObjectURL(blob);
 						setCapturedImageUrl(imageUrl);
 						setCapturedImageBlob(blob);
-						setIsPhotoTaken(true);
 						stopCamera();
 						stopDetection();
+						setIsCountingDown(false); // Reset countdown state
 					}
 				},
 				'image/jpeg',
 				1
 			);
+			setIsPhotoTaken(true);
 		} catch (error) {
 			console.error('Error capturing photo:', error);
 		}

@@ -21,11 +21,20 @@ export const useWebcam = (): UseWebcamReturn => {
 		setError(null);
 
 		try {
-			const stream = await navigator.mediaDevices.getUserMedia({
+			const constraints = {
 				video: {
-					facingMode: 'user'
+					facingMode: 'user',
+					// Request highest possible resolution
+					width: { ideal: 1920, min: 1280 },
+					height: { ideal: 1080, min: 720 },
+					// Request highest possible frame rate for better quality
+					frameRate: { ideal: 30, min: 24 },
+					// Request high quality video
+					aspectRatio: { ideal: 16 / 9 }
 				}
-			});
+			};
+
+			const stream = await navigator.mediaDevices.getUserMedia(constraints);
 
 			streamRef.current = stream;
 			videoRef.current.srcObject = stream;

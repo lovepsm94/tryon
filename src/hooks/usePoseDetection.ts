@@ -39,124 +39,124 @@ export const usePoseDetection = (
 	const animationFrameRef = useRef<number | null>(null);
 	const isInitializedRef = useRef(false);
 
-	// const drawKeypoints = useCallback(
-	// 	(landmarks: Keypoint[]) => {
-	// 		if (!canvasRef?.current || !videoRef?.current || !landmarks || landmarks.length === 0) {
-	// 			return;
-	// 		}
+	const drawKeypoints = useCallback(
+		(landmarks: Keypoint[]) => {
+			if (!canvasRef?.current || !videoRef?.current || !landmarks || landmarks.length === 0) {
+				return;
+			}
 
-	// 		const canvas = canvasRef.current;
-	// 		const ctx = canvas.getContext('2d');
-	// 		const video = videoRef.current;
+			const canvas = canvasRef.current;
+			const ctx = canvas.getContext('2d');
+			const video = videoRef.current;
 
-	// 		if (!ctx) {
-	// 			return;
-	// 		}
+			if (!ctx) {
+				return;
+			}
 
-	// 		canvas.width = video.videoWidth;
-	// 		canvas.height = video.videoHeight;
+			canvas.width = video.videoWidth;
+			canvas.height = video.videoHeight;
 
-	// 		// Clear canvas
-	// 		ctx.clearRect(0, 0, canvas.width, canvas.height);
-	// 		// Draw pose template
-	// 		// const template = poseTemplate.keypoints;
+			// Clear canvas
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+			// Draw pose template
+			const template = poseTemplate.keypoints;
 
-	// 		// Scale only by height
-	// 		// const scale = canvas.height / poseTemplate.height;
-	// 		// const offsetX = (canvas.width - poseTemplate.width * scale) / 2;
-	// 		// const offsetY = 0;
+			// Scale only by height
+			const scale = canvas.height / poseTemplate.height;
+			const offsetX = (canvas.width - poseTemplate.width * scale) / 2;
+			const offsetY = 0;
 
-	// 		// // Draw template keypoints (red)
-	// 		// template.forEach((keypoint) => {
-	// 		// 	const x = keypoint.x * scale + offsetX;
-	// 		// 	const y = keypoint.y * scale + offsetY;
+			// Draw template keypoints (red)
+			template.forEach((keypoint) => {
+				const x = keypoint.x * scale + offsetX;
+				const y = keypoint.y * scale + offsetY;
 
-	// 		// 	ctx.beginPath();
-	// 		// 	ctx.arc(x, y, 4, 0, 2 * Math.PI);
-	// 		// 	ctx.fillStyle = '#ff0000';
-	// 		// 	ctx.fill();
-	// 		// 	ctx.strokeStyle = '#ff0000';
-	// 		// 	ctx.lineWidth = 2;
-	// 		// 	ctx.stroke();
-	// 		// });
+				ctx.beginPath();
+				ctx.arc(x, y, 4, 0, 2 * Math.PI);
+				ctx.fillStyle = '#ff0000';
+				ctx.fill();
+				ctx.strokeStyle = '#ff0000';
+				ctx.lineWidth = 2;
+				ctx.stroke();
+			});
 
-	// 		// Draw keypoints (green)
-	// 		landmarks.forEach((landmark) => {
-	// 			const x = landmark.x;
-	// 			const y = landmark.y;
+			// Draw keypoints (green)
+			landmarks.forEach((landmark) => {
+				const x = landmark.x;
+				const y = landmark.y;
 
-	// 			ctx.beginPath();
-	// 			ctx.arc(x, y, 4, 0, 2 * Math.PI);
-	// 			ctx.fillStyle = '#00ff00';
-	// 			ctx.fill();
-	// 			ctx.strokeStyle = '#00ff00';
-	// 			ctx.lineWidth = 2;
-	// 			ctx.stroke();
-	// 		});
+				ctx.beginPath();
+				ctx.arc(x, y, 4, 0, 2 * Math.PI);
+				ctx.fillStyle = '#00ff00';
+				ctx.fill();
+				ctx.strokeStyle = '#00ff00';
+				ctx.lineWidth = 2;
+				ctx.stroke();
+			});
 
-	// 		// Draw connections between keypoints (skeleton)
-	// 		const connections = [
-	// 			[0, 1],
-	// 			[0, 2],
-	// 			[1, 3],
-	// 			[2, 4], // Head
-	// 			[5, 6],
-	// 			[5, 11],
-	// 			[6, 12],
-	// 			[11, 12], // Torso
-	// 			[5, 7],
-	// 			[7, 9], // Left arm
-	// 			[6, 8],
-	// 			[8, 10], // Right arm
-	// 			[11, 13],
-	// 			[13, 15], // Left leg
-	// 			[12, 14],
-	// 			[14, 16] // Right leg
-	// 		];
+			// Draw connections between keypoints (skeleton)
+			const connections = [
+				[0, 1],
+				[0, 2],
+				[1, 3],
+				[2, 4], // Head
+				[5, 6],
+				[5, 11],
+				[6, 12],
+				[11, 12], // Torso
+				[5, 7],
+				[7, 9], // Left arm
+				[6, 8],
+				[8, 10], // Right arm
+				[11, 13],
+				[13, 15], // Left leg
+				[12, 14],
+				[14, 16] // Right leg
+			];
 
-	// 		ctx.strokeStyle = '#00ff00';
-	// 		ctx.lineWidth = 2;
+			ctx.strokeStyle = '#00ff00';
+			ctx.lineWidth = 2;
 
-	// 		connections.forEach(([start, end]) => {
-	// 			const startPoint = landmarks[start];
-	// 			const endPoint = landmarks[end];
+			connections.forEach(([start, end]) => {
+				const startPoint = landmarks[start];
+				const endPoint = landmarks[end];
 
-	// 			if (
-	// 				startPoint &&
-	// 				endPoint &&
-	// 				startPoint.score &&
-	// 				endPoint.score &&
-	// 				startPoint.score > 0.3 &&
-	// 				endPoint.score > 0.3
-	// 			) {
-	// 				ctx.beginPath();
-	// 				ctx.moveTo(startPoint.x, startPoint.y);
-	// 				ctx.lineTo(endPoint.x, endPoint.y);
-	// 				ctx.stroke();
-	// 			}
-	// 		});
+				if (
+					startPoint &&
+					endPoint &&
+					startPoint.score &&
+					endPoint.score &&
+					startPoint.score > 0.3 &&
+					endPoint.score > 0.3
+				) {
+					ctx.beginPath();
+					ctx.moveTo(startPoint.x, startPoint.y);
+					ctx.lineTo(endPoint.x, endPoint.y);
+					ctx.stroke();
+				}
+			});
 
-	// 		// // Draw template connections color red
-	// 		// ctx.strokeStyle = '#ff0000';
-	// 		// ctx.lineWidth = 2;
-	// 		// connections.forEach(([start, end]) => {
-	// 		// 	const startPoint = template[start];
-	// 		// 	const endPoint = template[end];
+			// Draw template connections color red
+			ctx.strokeStyle = '#ff0000';
+			ctx.lineWidth = 2;
+			connections.forEach(([start, end]) => {
+				const startPoint = template[start];
+				const endPoint = template[end];
 
-	// 		// 	if (startPoint && endPoint) {
-	// 		// 		const x1 = startPoint.x * scale + offsetX;
-	// 		// 		const y1 = startPoint.y * scale + offsetY;
-	// 		// 		const x2 = endPoint.x * scale + offsetX;
-	// 		// 		const y2 = endPoint.y * scale + offsetY;
-	// 		// 		ctx.beginPath();
-	// 		// 		ctx.moveTo(x1, y1);
-	// 		// 		ctx.lineTo(x2, y2);
-	// 		// 		ctx.stroke();
-	// 		// 	}
-	// 		// });
-	// 	},
-	// 	[canvasRef, videoRef, poseTemplate]
-	// );
+				if (startPoint && endPoint) {
+					const x1 = startPoint.x * scale + offsetX;
+					const y1 = startPoint.y * scale + offsetY;
+					const x2 = endPoint.x * scale + offsetX;
+					const y2 = endPoint.y * scale + offsetY;
+					ctx.beginPath();
+					ctx.moveTo(x1, y1);
+					ctx.lineTo(x2, y2);
+					ctx.stroke();
+				}
+			});
+		},
+		[canvasRef, videoRef, poseTemplate]
+	);
 
 	// Clear canvas
 	const clearCanvas = useCallback(() => {
@@ -221,8 +221,14 @@ export const usePoseDetection = (
 			});
 
 			// Calculate score as percentage of passed points
+
+			// check if importantKeypoints exist in landmarks
+			const importantKeypointsExist = importantKeypoints.every((keypoint) => {
+				return !!landmarks[keypoint];
+			});
+
 			const poseMatchScore = passedPoints;
-			const isValidPose = passedPoints >= 6;
+			const isValidPose = passedPoints >= 6 && importantKeypointsExist;
 
 			const result: PoseResult = {
 				isValidPose,
