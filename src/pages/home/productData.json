@@ -1,0 +1,200 @@
+[
+	{
+		"id": 1,
+		"name": "Black Leather Pants",
+		"price": 8342,
+		"oldPrice": 10234,
+		"rating": 5,
+		"image": "/models/1.jpg",
+		"product": "/products/1.jpg",
+		"category": "women",
+		"type": "lower"
+	},
+	{
+		"id": 2,
+		"name": "Blue Jeans",
+		"price": 5678,
+		"oldPrice": 7890,
+		"rating": 5,
+		"image": "/models/2.jpg",
+		"product": "/products/2.jpg",
+		"category": "women",
+		"type": "lower"
+	},
+	{
+		"id": 3,
+		"name": "Pink Sweater",
+		"price": 12000,
+		"oldPrice": 13500,
+		"rating": 5,
+		"image": "/models/3.jpg",
+		"product": "/products/3.jpg",
+		"category": "women",
+		"type": "upper"
+	},
+	{
+		"id": 4,
+		"name": "Black Tank",
+		"price": 4321,
+		"oldPrice": 6000,
+		"rating": 5,
+		"image": "/models/4.jpg",
+		"product": "/products/4.jpg",
+		"category": "women",
+		"type": "upper"
+	},
+	{
+		"id": 5,
+		"name": "Panda Tee",
+		"price": 9100,
+		"oldPrice": 11000,
+		"rating": 5,
+		"image": "/models/5.jpg",
+		"product": "/products/5.jpg",
+		"category": "women",
+		"type": "upper"
+	},
+	{
+		"id": 6,
+		"name": "Black Lace Top",
+		"price": 6500,
+		"oldPrice": 8000,
+		"rating": 5,
+		"image": "/models/6.jpg",
+		"product": "/products/6.jpg",
+		"category": "women",
+		"type": "upper"
+	},
+	{
+		"id": 7,
+		"name": "Beige Chinos",
+		"price": 7200,
+		"oldPrice": 9500,
+		"rating": 5,
+		"image": "/models/7.jpg",
+		"product": "/products/7.jpg",
+		"category": "men",
+		"type": "lower"
+	},
+	{
+		"id": 8,
+		"name": "Brown Shorts",
+		"price": 6100,
+		"oldPrice": 8000,
+		"rating": 5,
+		"image": "/models/8.jpg",
+		"product": "/products/8.jpg",
+		"category": "men",
+		"type": "lower"
+	},
+	{
+		"id": 10,
+		"name": "Beige Turtleneck",
+		"price": 9300,
+		"oldPrice": 11000,
+		"rating": 5,
+		"image": "/models/10.jpg",
+		"product": "/products/10.jpg",
+		"category": "women",
+		"type": "upper"
+	},
+	{
+		"id": 11,
+		"name": "Blue Distressed Jeans",
+		"price": 5300,
+		"oldPrice": 7000,
+		"rating": 5,
+		"image": "/models/11.jpg",
+		"product": "/products/11.jpg",
+		"category": "men",
+		"type": "lower"
+	},
+	{
+		"id": 12,
+		"name": "Navy Fuji Tee",
+		"price": 4000,
+		"oldPrice": 5500,
+		"rating": 5,
+		"image": "/models/12.jpg",
+		"product": "/products/12.jpg",
+		"category": "men",
+		"type": "upper"
+	},
+	{
+		"id": 13,
+		"name": "Abstract Tee",
+		"price": 10500,
+		"oldPrice": 12000,
+		"rating": 5,
+		"image": "/models/13.jpg",
+		"product": "/products/13.jpg",
+		"category": "men",
+		"type": "upper"
+	},
+	{
+		"id": 14,
+		"name": "Navy Hawaiian Shirt",
+		"price": 9300,
+		"oldPrice": 11000,
+		"rating": 5,
+		"image": "/models/14.jpg",
+		"product": "/products/14.jpg",
+		"category": "men",
+		"type": "upper"
+	},
+	{
+		"id": 15,
+		"name": "Black Long Tee",
+		"price": 6900,
+		"oldPrice": 8500,
+		"rating": 5,
+		"image": "/models/15.jpg",
+		"product": "/products/15.jpg",
+		"category": "men",
+		"type": "upper"
+	},
+	{
+		"id": 16,
+		"name": "White Graffiti Tee",
+		"price": 5700,
+		"oldPrice": 7500,
+		"rating": 5,
+		"image": "/models/16.jpg",
+		"product": "/products/16.jpg",
+		"category": "men",
+		"type": "upper"
+	},
+	{
+		"id": 17,
+		"name": "Pink Flared Jeans",
+		"price": 8342,
+		"oldPrice": 10234,
+		"rating": 5,
+		"image": "/models/17.jpg",
+		"product": "/products/17.jpg",
+		"category": "women",
+		"type": "lower"
+	},
+	{
+		"id": 18,
+		"name": "Ivory Shorts",
+		"price": 5678,
+		"oldPrice": 7890,
+		"rating": 5,
+		"image": "/models/18.jpg",
+		"product": "/products/18.jpg",
+		"category": "women",
+		"type": "lower"
+	},
+	{
+		"id": 19,
+		"name": "Pink Tee",
+		"price": 12000,
+		"oldPrice": 13500,
+		"rating": 5,
+		"image": "/models/19.jpg",
+		"product": "/products/19.jpg",
+		"category": "women",
+		"type": "upper"
+	}
+]

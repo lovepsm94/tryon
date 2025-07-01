@@ -1,0 +1,73 @@
+{
+	"common": {
+		"home": "ホーム",
+		"men": "メンズ",
+		"women": "レディース",
+		"english": "English",
+		"japanese": "日本語",
+		"bannerTitle": "バーチャル試着でファッション通販の新時代へ",
+		"footerLeft": "© 2025 Tryonic AI.",
+		"footerRight": "<a>{{company}}</a> の製品です",
+		"size": "サイズ",
+		"virtualTryOn": "バーチャル試着",
+		"selectOtherPerson": "他の人物で試着する",
+		"switchUserToTryOn": "試着ユーザーを切り替え中",
+		"switchUserToTryOnDescription": "別の人物を選択すると、以前の試着データはすべて削除されます。",
+		"switchUserToTryOnWarning": "本当に続けますか？",
+		"cancel": "キャンセル",
+		"continue": "続行",
+		"next": "次へ",
+		"back": "戻る",
+		"productVariantsTitle": "こちらの商品とよく一緒に購入されています。今すぐ試着しましょう。",
+		"sku": "SKU",
+		"category": "カテゴリ",
+		"tags": "タグ",
+		"wishlist": "ウィッシュリスト",
+		"askQuestion": "質問する",
+		"share": "共有",
+		"description": "商品説明",
+		"information": "商品情報",
+		"reviews": "レビュー（{{count}}件）",
+		"youMightAlsoLike": "こちらもおすすめ",
+		"enterYourWeightAndHeight": "身長と体重を入力してください",
+		"enterWeight": "体重を入力",
+		"enterHeight": "身長を入力",
+		"gotIt": "了解しました",
+		"retake": "再撮影",
+		"accept": "使用する",
+		"doYouWantToUseThisPhoto": "この写真を使用しますか？",
+		"personalStylistWithAI": "AI搭載パーソナルスタイリスト",
+		"processingYourVirtualTryOn": "バーチャル試着を処理中です...",
+		"pleaseWait": "しばらくお待ちください..."
+	},
+	"getUserModelImage": {
+		"steps": {
+			"detectCamera": {
+				"title": "写真の準備",
+				"instruction": "ドットが中央に来て円が色づくまで角度を調整してください。"
+			},
+			"photoGuide": {
+				"title": "撮影準備",
+				"instruction": "カメラを正面・腰の高さに配置し、全身が画面に収まるように後ろに下がってください。"
+			},
+			"sideView": {
+				"title": "横向きスキャン",
+				"instruction": "90度回転し、ポーズガイドに合わせてまっすぐ立ってください。"
+			},
+			"frontView": {
+				"title": "正面ビュー",
+				"instruction": "カメラを正面に見て、ポーズガイドに従って直立してください。"
+			},
+			"result": {
+				"title": "結果",
+				"instruction": "写真の処理が完了しました。",
+				"loading": "画像を読み込み中...",
+				"frontView": "正面ビュー",
+				"sideView": "横向きビュー",
+				"noFrontImage": "正面画像がありません",
+				"noSideImage": "横向き画像がありません",
+				"continue": "続行"
+			}
+		}
+	}
+}

@@ -1,0 +1,73 @@
+{
+	"common": {
+		"home": "Home",
+		"men": "Men",
+		"women": "Women",
+		"english": "English",
+		"japanese": "日本語",
+		"bannerTitle": "New Era of Fashion Online Shopping with Virtual Outfit Try-On",
+		"footerLeft": "© 2025 Tryonic AI.",
+		"footerRight": " A product of <a>{{company}}</a>",
+		"size": "Size",
+		"virtualTryOn": "Virtual Try-On",
+		"selectOtherPerson": "Select other person to Try-On",
+		"switchUserToTryOn": "Switching user to Try-On",
+		"switchUserToTryOnDescription": "If you select another person to Try-On, all your previous Try-On data will be deleted.",
+		"switchUserToTryOnWarning": "Are you sure you want to continue?",
+		"cancel": "Cancel",
+		"continue": "Continue",
+		"next": "Next",
+		"back": "Back",
+		"productVariantsTitle": "Customers often pair these. Choose to Try-On now.",
+		"sku": "sku",
+		"category": "Category",
+		"tags": "Tags",
+		"wishlist": "Wishlist",
+		"askQuestion": "Ask question",
+		"share": "Share",
+		"description": "Description",
+		"information": "Information",
+		"reviews": "Reviews ({{count}})",
+		"youMightAlsoLike": "You might also like",
+		"enterYourWeightAndHeight": "Enter your weight & height",
+		"enterWeight": "Enter weight",
+		"enterHeight": "Enter height",
+		"gotIt": "Got it",
+		"retake": "Retake",
+		"accept": "Accept",
+		"doYouWantToUseThisPhoto": "Do you want to use this photo?",
+		"personalStylistWithAI": "Personal Stylist with AI",
+		"processingYourVirtualTryOn": "Processing your virtual Try-On...",
+		"pleaseWait": "Please wait..."
+	},
+	"getUserModelImage": {
+		"steps": {
+			"detectCamera": {
+				"title": "Prepare your photo",
+				"instruction": "Adjust the angle until the dot is centered and the circle changes color."
+			},
+			"photoGuide": {
+				"title": "Prepare to take photo",
+				"instruction": "Position your camera straight and at waist height. Carefully step back into the space behind you until you can see your entire body on the screen."
+			},
+			"sideView": {
+				"title": "Scan side view",
+				"instruction": "Rotate 90° and stand straight, matching the pose guide."
+			},
+			"frontView": {
+				"title": "Front View",
+				"instruction": "Stand upright, face the camera, and match the pose guide."
+			},
+			"result": {
+				"title": "Result",
+				"instruction": "Your photo has been processed successfully.",
+				"loading": "Loading images...",
+				"frontView": "Front View",
+				"sideView": "Side View",
+				"noFrontImage": "No front image available",
+				"noSideImage": "No side image available",
+				"continue": "Continue"
+			}
+		}
+	}
+}
