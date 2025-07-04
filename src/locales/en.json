@@ -38,7 +38,8 @@
 		"doYouWantToUseThisPhoto": "Do you want to use this photo?",
 		"personalStylistWithAI": "Personal Stylist with AI",
 		"processingYourVirtualTryOn": "Processing your virtual Try-On...",
-		"pleaseWait": "Please wait..."
+		"pleaseWait": "Please wait...",
+		"review": "{{count}} reviews"
 	},
 	"getUserModelImage": {
 		"steps": {

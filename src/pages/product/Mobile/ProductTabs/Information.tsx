@@ -5,10 +5,10 @@ import { useTranslation } from 'react-i18next';
 function Information() {
 	const { t } = useTranslation();
 	const information = [
-		'Fabric: Denim',
-		'Fit type: Loose fit',
-		'Feature: Adjustable straps',
-		'Front and back pockets'
+		'生地：デニム',
+		'フィットタイプ：ルーズフィット',
+		'特徴：調節可能なストラップ',
+		'前後にポケット'
 	];
 	return (
 		<TabItem

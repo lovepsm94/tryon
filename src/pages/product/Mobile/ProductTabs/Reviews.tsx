@@ -14,7 +14,7 @@ const reviews = [
 			avatar: '/reviews/1.png'
 		},
 		comment:
-			'At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupt et quas molestias excepturi sint non provident, sunt in culpa qui officia animi, id est laborum et dolorum fuga.',
+			'最近このシャツを購入しましたが、自分の選択にとても満足しています！生地は柔らかく通気性が良いので、普段使いにぴったりです。フィット感もちょうどよく、きつすぎずゆるすぎず快適です。シンプルでありながらおしゃれなデザインも気に入っており、ジーンズやスカートとも合わせやすいです。',
 		date: dayjs()
 	},
 	{
@@ -25,7 +25,7 @@ const reviews = [
 			avatar: '/reviews/2.png'
 		},
 		comment:
-			'At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupt et quas molestias excepturi sint non provident, sunt in culpa qui officia animi, id est laborum et dolorum fuga.',
+			'最近このシャツを購入しましたが、自分の選択にとても満足しています！生地は柔らかく通気性が良いので、普段使いにぴったりです。フィット感もちょうどよく、きつすぎずゆるすぎず快適です。シンプルでありながらおしゃれなデザインも気に入っており、ジーンズやスカートとも合わせやすいです。',
 		date: dayjs()
 	}
 ];

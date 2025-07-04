@@ -38,7 +38,8 @@
 		"doYouWantToUseThisPhoto": "この写真を使用しますか？",
 		"personalStylistWithAI": "AI搭載パーソナルスタイリスト",
 		"processingYourVirtualTryOn": "バーチャル試着を処理中です...",
-		"pleaseWait": "しばらくお待ちください..."
+		"pleaseWait": "しばらくお待ちください...",
+		"review": "レビュー（{{count}}件）"
 	},
 	"getUserModelImage": {
 		"steps": {

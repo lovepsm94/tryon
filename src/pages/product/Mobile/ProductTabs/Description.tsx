@@ -9,8 +9,7 @@ function Description() {
 			label={t('common.description')}
 			content={
 				<p className='text-[14px] leading-[22px]'>
-					At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum
-					deleniti atque corrupti quos dolores et quas molestias excepturi sint non providen.
+					この製品は、高品質なコットン素材で作られており、触り心地が柔らかく、着用時も快適です。シンプルなデザインで、カジュアルながらも独自の印象を与えます。普段使いはもちろん、ストリートファッションや特別な日のコーディネートにもおすすめです。
 				</p>
 			}
 		></TabItem>

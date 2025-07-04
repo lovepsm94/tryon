@@ -2,14 +2,16 @@ import React, { useMemo } from 'react';
 import Rating from '@/components/Rating';
 import { useParams } from 'react-router-dom';
 import productData from '@/pages/home/productData.json';
+import { useTranslation } from 'react-i18next';
 
 const description =
-	'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.';
+	'この製品は、高品質なコットン素材で作られており、触り心地が柔らかく、着用時も快適です。シンプルなデザインで、カジュアルながらも独自の印象を与えます。普段使いはもちろん、ストリートファッションや特別な日のコーディネートにもおすすめです。';
 
 const reviews = 2;
 
 function ProductInfo() {
 	const { id } = useParams();
+	const { t } = useTranslation();
 
 	const currentProduct = useMemo(() => {
 		return productData.find((product) => product.id === Number(id));
@@ -24,7 +26,7 @@ function ProductInfo() {
 			</p>
 			<div className='flex items-center mt-1 gap-2'>
 				<Rating rating={currentProduct.rating} />
-				<p className='text-[12px] leading-[18px] text-black-600'>{reviews} reviews</p>
+				<p className='text-[12px] leading-[18px] text-black-600'>{t('common.review', { count: reviews })}</p>
 			</div>
 			<p className='text-[14px] leading-5 text-[#3E3E59] mt-2 md:mt-3'>{description}</p>
 
