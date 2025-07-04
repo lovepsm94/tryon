@@ -6,14 +6,14 @@ interface CountdownAnimationProps {
 	className?: string;
 	showRestartButton?: boolean;
 	onRestart?: () => void;
+	onCheckShow?: () => void;
 }
 
 const CountdownAnimation: React.FC<CountdownAnimationProps> = ({
 	initialCount = 3,
 	onComplete,
 	className = '',
-	showRestartButton = true,
-	onRestart
+	onCheckShow
 }) => {
 	const [count, setCount] = useState(initialCount);
 	const [isComplete, setIsComplete] = useState(false);
@@ -37,6 +37,10 @@ const CountdownAnimation: React.FC<CountdownAnimationProps> = ({
 			setTimeout(() => {
 				setIsComplete(true);
 				setShowCheck(true);
+				// Call onCheckShow callback when check mark starts showing
+				if (onCheckShow) {
+					onCheckShow();
+				}
 				// Start fade out after 1 second
 				setTimeout(() => {
 					setFadeOut(true);
@@ -53,20 +57,9 @@ const CountdownAnimation: React.FC<CountdownAnimationProps> = ({
 		}
 	}, [count]);
 
-	const resetAnimation = () => {
-		setCount(initialCount);
-		setIsComplete(false);
-		setShowCheck(false);
-		setIsAnimating(false);
-		setFadeOut(false);
-		if (onRestart) {
-			onRestart();
-		}
-	};
-
 	return (
 		<>
-			<div className='absolute inset-0 bg-black-900/60 flex items-center justify-center z-50'>
+			<div className='absolute inset-0 flex items-center justify-center z-50'>
 				<div
 					className={`relative w-64 h-64 flex items-center justify-center transition-all duration-700 ease-out ${className} ${
 						fadeOut ? 'opacity-0 scale-75 blur-sm' : 'opacity-100 scale-100 blur-0'
@@ -134,23 +127,6 @@ const CountdownAnimation: React.FC<CountdownAnimationProps> = ({
 							</div>
 						) : null}
 					</div>
-					{/* Restart Button */}
-					{isComplete && !showCheck && showRestartButton && (
-						<button
-							onClick={resetAnimation}
-							className={`absolute -bottom-16 px-6 py-2 bg-white/20 hover:bg-white/30 backdrop-blur-md rounded-full text-white font-medium transition-all duration-500 hover:scale-105 border border-white/30 ${
-								fadeOut
-									? 'opacity-0 translate-y-4'
-									: 'opacity-100 translate-y-0 animate-in slide-in-from-bottom-4'
-							}`}
-							style={{
-								animationDelay: '0.5s',
-								animationFillMode: 'both'
-							}}
-						>
-							Restart
-						</button>
-					)}
 				</div>
 			</div>
 

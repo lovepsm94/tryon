@@ -43,6 +43,7 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
+	console.log('qưeqwe');
 	return (
 		<ResponsiveProvider>
 			<RouterProvider router={router} />
