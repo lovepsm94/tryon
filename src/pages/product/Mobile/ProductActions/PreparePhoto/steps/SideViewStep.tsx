@@ -32,6 +32,7 @@ const SideViewStep: React.FC<SideViewStepProps> = ({ onContinue }) => {
 
 	// Capture photo from video stream
 	const capturePhoto = async () => {
+		console.log('capturePhoto');
 		if (!videoRef.current) return;
 
 		try {
@@ -67,7 +68,6 @@ const SideViewStep: React.FC<SideViewStepProps> = ({ onContinue }) => {
 						setCapturedImageBlob(blob);
 						stopCamera();
 						stopDetection();
-						setIsCountingDown(false);
 					}
 				},
 				'image/jpeg',
@@ -152,7 +152,9 @@ const SideViewStep: React.FC<SideViewStepProps> = ({ onContinue }) => {
 	useEffect(() => {
 		let interval: NodeJS.Timeout;
 
-		if (isPoseValid && !isPhotoTaken) {
+		if (isPhotoTaken) return;
+
+		if (isPoseValid) {
 			interval = setInterval(() => {
 				setPoseStableTime((prev) => {
 					const newTime = prev + 0.1;
@@ -188,81 +190,78 @@ const SideViewStep: React.FC<SideViewStepProps> = ({ onContinue }) => {
 	return (
 		<>
 			<div className='w-full max-w-md grow rounded-2xl mx-auto mb-4 flex items-center justify-center overflow-hidden relative md:h-[calc(100vh-350px)]'>
-				{!isPhotoTaken ? (
-					<>
-						<div className='absolute inset-0 flex items-center justify-center z-30' ref={containerRef}>
-							<SidePose className='w-full object-cover h-[calc(100%-80px)]' />
-						</div>
-						<video ref={videoRef} className='w-full h-full object-cover' playsInline muted />
-
-						<canvas
-							ref={canvasRef}
-							className='absolute inset-0 w-full h-full pointer-events-none z-40'
-							style={{
-								objectFit: 'cover',
-								width: '100%',
-								height: '100%',
-								transform: 'scaleX(-1)'
+				{/* Countdown overlay */}
+				{isCountingDown && (
+					<div className='absolute inset-0 flex items-center justify-center z-50'>
+						<CountdownAnimation
+							initialCount={3}
+							onComplete={() => {
+								setIsCountingDown(false);
 							}}
+							onCheckShow={capturePhoto}
+							showRestartButton={false}
+							className='w-32 h-32'
 						/>
+					</div>
+				)}
 
-						{/* Countdown overlay */}
-						{isCountingDown && (
-							<div className='absolute inset-0 flex items-center justify-center z-50 bg-black/50'>
-								<CountdownAnimation
-									initialCount={3}
-									onComplete={() => {
-										setIsCountingDown(false);
-										capturePhoto();
-									}}
-									showRestartButton={false}
-									className='w-32 h-32'
-								/>
-							</div>
-						)}
-					</>
-				) : (
-					<>
-						{/* Display captured image */}
-						{capturedImageUrl && (
-							<img src={capturedImageUrl} alt='Captured photo' className='w-full h-full object-cover' />
-						)}
-					</>
-				)}
+				{/* Camera view - shown when photo is not taken */}
+				<div className={`absolute inset-0 ${isPhotoTaken ? 'hidden' : ''}`}>
+					<div className='absolute inset-0 flex items-center justify-center z-30' ref={containerRef}>
+						<SidePose className='w-full object-cover h-[calc(100%-80px)]' />
+					</div>
+					<video ref={videoRef} className='w-full h-full object-cover' playsInline muted />
+					<canvas
+						ref={canvasRef}
+						className='absolute inset-0 w-full h-full pointer-events-none z-40'
+						style={{
+							objectFit: 'cover',
+							width: '100%',
+							height: '100%',
+							transform: 'scaleX(-1)'
+						}}
+					/>
+				</div>
+
+				{/* Captured image view - shown when photo is taken */}
+				<div className={`absolute inset-0 ${!isPhotoTaken ? 'hidden' : ''}`}>
+					{capturedImageUrl && (
+						<img src={capturedImageUrl} alt='Captured photo' className='w-full h-full object-cover' />
+					)}
+				</div>
 			</div>
+
 			<div className='h-[92px] flex flex-col'>
-				{!isPhotoTaken ? (
-					<>
-						<div className='rounded-lg border-gradient text-center'>
-							<p className='text-[#1B1D21] text-[16px] leading-[24px] p-4 text-center bg-[rgba(44,68,239,0.1)]'>
-								{t('getUserModelImage.steps.sideView.instruction')}
-							</p>
-						</div>
-						<div className='grow'></div>
-					</>
-				) : (
-					<>
-						<p className='text-[#1B1D21] text-[16px] leading-[24px] text-center'>
-							{t('common.doYouWantToUseThisPhoto')}
-						</p>
-						<div className='mt-4 grid grid-cols-2 gap-3'>
-							<button
-								className='bg-white h-[44px] text-[#1B1D21] text-[16px] leading-[24px] border border-[#1B1D21]'
-								onClick={retakePhoto}
-								disabled={isSaving}
-							>
-								{t('common.retake')}
-							</button>
-							<button
-								className='bg-gradient h-[44px] text-white text-[16px] leading-[24px]'
-								onClick={acceptPhoto}
-								disabled={isSaving}
-							>
-								{t('common.accept')}
-							</button>
-						</div>
-					</>
-				)}
+				{/* Instruction text - shown when photo is not taken */}
+				<div className={`rounded-lg border-gradient text-center ${isPhotoTaken ? 'hidden' : ''}`}>
+					<p className='text-[#1B1D21] text-[16px] leading-[24px] p-4 text-center bg-[rgba(44,68,239,0.1)]'>
+						{t('getUserModelImage.steps.sideView.instruction')}
+					</p>
+				</div>
+				<div className={`grow ${isPhotoTaken ? 'hidden' : ''}`}></div>
+
+				{/* Photo review section - shown when photo is taken */}
+				<div className={`${!isPhotoTaken ? 'hidden' : ''}`}>
+					<p className='text-[#1B1D21] text-[16px] leading-[24px] text-center'>
+						{t('common.doYouWantToUseThisPhoto')}
+					</p>
+					<div className='mt-4 grid grid-cols-2 gap-3'>
+						<button
+							className='bg-white h-[44px] text-[#1B1D21] text-[16px] leading-[24px] border border-[#1B1D21]'
+							onClick={retakePhoto}
+							disabled={isSaving}
+						>
+							{t('common.retake')}
+						</button>
+						<button
+							className='bg-gradient h-[44px] text-white text-[16px] leading-[24px]'
+							onClick={acceptPhoto}
+							disabled={isSaving}
+						>
+							{t('common.accept')}
+						</button>
+					</div>
+				</div>
 			</div>
 		</>
 	);

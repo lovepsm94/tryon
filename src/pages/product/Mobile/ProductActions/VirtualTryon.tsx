@@ -122,7 +122,9 @@ function VirtualTryon() {
 			if (frontImageData) {
 				const frontImageUrl = URL.createObjectURL(frontImageData.imageBlob);
 				setTryonResultImage(frontImageUrl);
-				window.scrollTo({ top: 0, behavior: 'smooth' });
+				setTimeout(() => {
+					window.scrollTo({ top: 0, behavior: 'smooth' });
+				}, 100);
 			}
 
 			// Get user images from IndexedDB
