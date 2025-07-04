@@ -6,7 +6,7 @@ import { paths } from '@/routes';
 import cn from '@/utils/cn';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 interface HeaderProps {
 	textColor?: string;
@@ -19,6 +19,7 @@ function Header({ textColor }: HeaderProps) {
 	const isHome = location.pathname === paths.home;
 	const isMen = location.pathname === paths.men;
 	const isWomen = location.pathname === paths.women;
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		const handleScroll = () => {
@@ -68,7 +69,10 @@ function Header({ textColor }: HeaderProps) {
 					/>
 				</Link>
 			</div>
-			<Logo className={cn('absolute -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2')} />
+			<Logo
+				className={cn('absolute -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 cursor-pointer')}
+				onClick={() => navigate(paths.home)}
+			/>
 			<div className='flex items-center gap-5 justify-end'>
 				<LanguageSwitch textColor={isScrolled ? 'dark' : 'white'} />
 				<Search />
