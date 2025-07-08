@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useMemo, ReactNode, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import productData from '@/pages/home/productData.json';
+import { localStorageManager } from '@/utils/localStorageManager';
 
 export interface Product {
 	id: number;
@@ -28,8 +29,17 @@ interface ProductContextType {
 	isTryonLoading: boolean;
 	setTryonLoading: (loading: boolean) => void;
 	// Cache methods
-	getCachedTryonResult: (upperId?: number, lowerId?: number) => string | null;
-	setCachedTryonResult: (imageUrl: string, upperId?: number, lowerId?: number) => void;
+	getCachedTryonResult: (params: {
+		upperId?: number;
+		lowerId?: number;
+		selectedFrontImageId?: number | null;
+	}) => string | null;
+	setCachedTryonResult: (params: {
+		imageUrl: string;
+		upperId?: number;
+		lowerId?: number;
+		selectedFrontImageId?: number | null;
+	}) => void;
 	clearTryonCache: () => void;
 }
 
@@ -49,19 +59,45 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
 	const tryonCache = useRef<Map<string, string>>(new Map());
 
 	// Helper function to create cache key
-	const createCacheKey = (upperId?: number, lowerId?: number): string => {
-		return `${upperId || 'none'}-${lowerId || 'none'}`;
+	const createCacheKey = (params: {
+		upperId?: number;
+		lowerId?: number;
+		selectedFrontImageId?: number | null;
+	}): string => {
+		const { upperId, lowerId, selectedFrontImageId } = params;
+		// Get selectedFrontImageId from localStorage if not provided
+		let frontImageId = selectedFrontImageId;
+		if (frontImageId === undefined) {
+			try {
+				const userData = localStorageManager.getUserData();
+				frontImageId = userData?.selectedFrontImageId || null;
+			} catch (error) {
+				console.warn('Could not retrieve selected front image ID from localStorage:', error);
+				frontImageId = null;
+			}
+		}
+		return `${upperId || 'none'}-${lowerId || 'none'}-${frontImageId || 'none'}`;
 	};
 
 	// Get cached tryon result
-	const getCachedTryonResult = (upperId?: number, lowerId?: number): string | null => {
-		const cacheKey = createCacheKey(upperId, lowerId);
+	const getCachedTryonResult = (params: {
+		upperId?: number;
+		lowerId?: number;
+		selectedFrontImageId?: number | null;
+	}): string | null => {
+		const cacheKey = createCacheKey(params);
 		return tryonCache.current.get(cacheKey) || null;
 	};
 
 	// Set cached tryon result
-	const setCachedTryonResult = (imageUrl: string, upperId?: number, lowerId?: number) => {
-		const cacheKey = createCacheKey(upperId, lowerId);
+	const setCachedTryonResult = (params: {
+		imageUrl: string;
+		upperId?: number;
+		lowerId?: number;
+		selectedFrontImageId?: number | null;
+	}) => {
+		const { imageUrl, ...cacheParams } = params;
+		const cacheKey = createCacheKey(cacheParams);
 		tryonCache.current.set(cacheKey, imageUrl);
 	};
 

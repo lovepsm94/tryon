@@ -46,6 +46,7 @@ class TryonApiService {
 
 			// Add required fields
 			formData.append('front_image', request.front_image);
+			formData.append('human_image', request.front_image);
 
 			// Add optional fields only if they exist
 			if (request.upper_garment) {

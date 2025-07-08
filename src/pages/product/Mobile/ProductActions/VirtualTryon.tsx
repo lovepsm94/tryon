@@ -78,7 +78,17 @@ function VirtualTryon() {
 		// Check cache first
 		const upperId = selectedProducts.upper?.id;
 		const lowerId = selectedProducts.lower?.id;
-		const cachedResult = getCachedTryonResult(upperId, lowerId);
+
+		// Get selected front image ID for cache key
+		let selectedFrontImageId: number | null = null;
+		try {
+			const userData = localStorageManager.getUserData();
+			selectedFrontImageId = userData?.selectedFrontImageId || null;
+		} catch (error) {
+			console.warn('Could not retrieve selected front image ID from localStorage:', error);
+		}
+
+		const cachedResult = getCachedTryonResult({ upperId, lowerId, selectedFrontImageId });
 
 		if (cachedResult) {
 			console.log('Using cached tryon result');
@@ -203,7 +213,7 @@ function VirtualTryon() {
 			const imageUrl = URL.createObjectURL(blob);
 
 			// Store in cache
-			setCachedTryonResult(imageUrl, upperId, lowerId);
+			setCachedTryonResult({ imageUrl, upperId, lowerId, selectedFrontImageId });
 			setTryonResultImage(imageUrl);
 
 			console.log('Tryon completed successfully:', imageUrl);
@@ -230,7 +240,7 @@ function VirtualTryon() {
 				<span className='flex items-center justify-center gap-2'>
 					<TryonLoading isLoading={isTryonLoading} />
 					{isTryonLoading ? (
-						<span className='flex items-center justify-center gap-2'>Please wait...</span>
+						<span className='flex items-center justify-center gap-2'>{t('common.pleaseWait')}</span>
 					) : (
 						<span className='flex items-center justify-center gap-2'>
 							{t('common.virtualTryOn')}
