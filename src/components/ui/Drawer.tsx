@@ -83,7 +83,7 @@ const Drawer = ({ isOpen, onClose, contentClassName, children, showOverlay = tru
 		<>
 			<div
 				className={cn(
-					'fixed inset-0 bg-dark z-40 transition-all duration-300 ease-out',
+					'fixed inset-0 bg-dark z-[9000] transition-all duration-300 ease-out',
 					isOpen ? 'bg-opacity-50 visible' : 'bg-opacity-0 invisible',
 					showOverlay ? 'bg-opacity-50' : 'bg-opacity-0'
 				)}
@@ -92,7 +92,7 @@ const Drawer = ({ isOpen, onClose, contentClassName, children, showOverlay = tru
 
 			<div
 				className={cn(
-					'fixed bottom-0 left-0 w-full bg-white shadow-2xl z-50 transform transition-all duration-300 ease-out rounded-t-2xl',
+					'fixed bottom-0 left-0 w-full bg-white shadow-2xl z-[9001] transform transition-all duration-300 ease-out rounded-t-2xl',
 					contentClassName,
 					isOpen && !isClosing ? 'translate-y-0 opacity-100' : 'translate-y-full'
 				)}

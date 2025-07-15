@@ -75,7 +75,7 @@ function ClearPersonData() {
 					{content}
 				</Drawer>
 			) : (
-				<Modal isOpen={isOpen} onClose={() => setIsOpen(false)} contentClassName='max-w-[540px]'>
+				<Modal isOpen={isOpen} onClose={() => setIsOpen(false)} contentClassName='max-w-[540px] p-6'>
 					{content}
 				</Modal>
 			)}

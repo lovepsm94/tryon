@@ -7,6 +7,7 @@ import { DetectCameraStep, FrontViewStep, PhotoGuideStep, SideViewStep } from '.
 import { checkMotionSensorSupport } from '@/utils';
 import { indexedDBManager } from '@/utils/indexedDBManager';
 import { ReactComponent as CloseIcon } from '@/assets/close.svg';
+import cn from '@/utils/cn';
 
 type PhotoStep = 'detectCamera' | 'photoGuide' | 'sideView' | 'frontView';
 
@@ -118,10 +119,10 @@ const GetUserModelImage: React.FC<GetUserModelImageProps> = ({ onCancel, onConti
 		<div
 			className={`h-full flex flex-col mx-auto max-w-md ${isMobile ? 'transition-opacity duration-500 ease-out' : ''} ${showContent ? 'opacity-100' : 'opacity-0'}`}
 		>
-			<h2 className='text-[18px] font-medium text-center mb-6'>
+			<h2 className='text-[18px] font-medium text-center mb-4 mt-4'>
 				{t(`getUserModelImage.steps.${currentStep}.title`)}
 			</h2>
-			{isMobile && <CloseIcon className='absolute top-4 right-4 cursor-pointer' onClick={handleClose} />}
+			<CloseIcon className='absolute top-4 right-4 cursor-pointer' onClick={handleClose} />
 
 			{/* Step content */}
 			{renderStepContent()}
@@ -133,7 +134,11 @@ const GetUserModelImage: React.FC<GetUserModelImageProps> = ({ onCancel, onConti
 	}
 
 	return (
-		<Modal isOpen={true} onClose={handleClose}>
+		<Modal
+			isOpen={true}
+			onClose={handleClose}
+			contentClassName={cn('md:h-screen rounded-none', currentStep === 'photoGuide' && '!h-[600px]')}
+		>
 			{content}
 		</Modal>
 	);

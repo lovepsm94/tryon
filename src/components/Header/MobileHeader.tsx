@@ -45,7 +45,7 @@ function MobileHeader({ textColor }: MobileHeaderProps) {
 	return (
 		<div
 			className={cn(
-				'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
+				'fixed top-0 left-0 right-0 z-[900] transition-all duration-300',
 				isOpenMenu
 					? 'bg-white/80 text-dark backdrop-blur-[20px] backdrop-saturate-[180%]'
 					: isScrolled

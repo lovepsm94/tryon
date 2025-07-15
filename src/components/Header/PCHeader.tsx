@@ -34,7 +34,7 @@ function Header({ textColor }: HeaderProps) {
 	return (
 		<div
 			className={cn(
-				'h-[68px] px-[52px] flex items-center justify-between fixed top-0 left-0 right-0 z-50 transition-all duration-300',
+				'h-[68px] px-[52px] flex items-center justify-between fixed top-0 left-0 right-0 z-[900] transition-all duration-300',
 				isScrolled ? 'bg-white/80 text-dark backdrop-blur-[20px] backdrop-saturate-[180%]' : 'bg-transparent',
 				isScrolled ? 'text-dark' : 'text-white',
 				textColor

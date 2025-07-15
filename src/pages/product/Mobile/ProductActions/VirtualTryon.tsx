@@ -17,11 +17,14 @@ function VirtualTryon() {
 	const { t } = useTranslation();
 	const {
 		selectedProducts,
-		setTryonResultImage,
+		setTryonResult,
 		getCachedTryonResult,
 		setCachedTryonResult,
 		isTryonLoading,
-		setTryonLoading
+		setTryonLoading,
+		setSelectedSize,
+		setTryonImage,
+		currentProduct
 	} = useProduct();
 	const [isOpen, setIsOpen] = useState(false);
 	const [currentStep, setCurrentStep] = useState<VirtualTryonStep | null>(null);
@@ -30,7 +33,9 @@ function VirtualTryon() {
 
 	const handleContinue = async () => {
 		if (currentStep === 'weight-height') {
-			setCurrentStep('prepare-photo');
+			setTimeout(() => {
+				setCurrentStep('prepare-photo');
+			}, 200);
 		} else if (currentStep === 'prepare-photo') {
 			setCurrentStep(null);
 			setTimeout(async () => {
@@ -78,12 +83,22 @@ function VirtualTryon() {
 		// Check cache first
 		const upperId = selectedProducts.upper?.id;
 		const lowerId = selectedProducts.lower?.id;
-		const cachedResult = getCachedTryonResult(upperId, lowerId);
+
+		// Get selected front image ID for cache key
+		let selectedFrontImageId: number | null = null;
+		try {
+			const userData = localStorageManager.getUserData();
+			selectedFrontImageId = userData?.selectedFrontImageId || null;
+		} catch (error) {
+			console.warn('Could not retrieve selected front image ID from localStorage:', error);
+		}
+
+		const cachedResult = getCachedTryonResult({ upperId, lowerId, selectedFrontImageId });
 
 		if (cachedResult) {
 			console.log('Using cached tryon result');
 			window.scrollTo({ top: 0, behavior: 'smooth' });
-			setTryonResultImage(cachedResult);
+			setTryonResult(cachedResult);
 			setTryonLoading(false);
 			return;
 		}
@@ -120,8 +135,8 @@ function VirtualTryon() {
 			}
 
 			if (frontImageData) {
-				const frontImageUrl = URL.createObjectURL(frontImageData.imageBlob);
-				setTryonResultImage(frontImageUrl);
+				// const frontImageUrl = URL.createObjectURL(frontImageData.imageBlob);
+				// setTryonResult(frontImageUrl);
 				setTimeout(() => {
 					window.scrollTo({ top: 0, behavior: 'smooth' });
 				}, 100);
@@ -145,6 +160,7 @@ function VirtualTryon() {
 			}
 
 			setTryonLoading(true);
+			setTryonImage(frontImageData?.imageBlob ? URL.createObjectURL(frontImageData.imageBlob) : null);
 
 			// Prepare the tryon request with only required fields
 			const request: Partial<TryonRequest> = {
@@ -152,9 +168,7 @@ function VirtualTryon() {
 			};
 
 			// Add side image if available
-			if (sideImage) {
-				request.side_image = sideImage;
-			}
+			request.side_image = sideImage;
 
 			// Add weight and height if available
 			if (weight) {
@@ -170,7 +184,15 @@ function VirtualTryon() {
 					selectedProducts.upper.product,
 					`upper_${selectedProducts.upper.id}.jpg`
 				);
+				const upperSizeChart = await tryonApiService.fetchProductSizeChart(
+					selectedProducts.upper.sizes,
+					'upper_size_chart.csv'
+				);
+
+				console.log(upperSizeChart);
 				request.upper_garment = upperImage;
+				request.upper_size_chart = upperSizeChart;
+				request.sleeve_type = selectedProducts.upper.sleeve_type;
 			}
 
 			// Add lower garment if selected
@@ -179,7 +201,14 @@ function VirtualTryon() {
 					selectedProducts.lower.product,
 					`lower_${selectedProducts.lower.id}.jpg`
 				);
+				const lowerSizeChart = await tryonApiService.fetchProductSizeChart(
+					selectedProducts.lower.sizes,
+					'lower_size_chart.csv'
+				);
+				console.log(lowerSizeChart);
 				request.lower_garment = lowerImage;
+				request.lower_size_chart = lowerSizeChart;
+				request.inseam_type = selectedProducts.lower.inseam_type;
 			}
 
 			// Ensure we have at least one garment
@@ -196,15 +225,40 @@ function VirtualTryon() {
 			const taskId = await tryonApiService.submitTryonRequest(request as TryonRequest);
 
 			// Poll for completion
-			const resultImage = await tryonApiService.pollTryonCompletion(taskId);
+			const result = await tryonApiService.pollTryonCompletion(taskId);
 
 			// Convert base64 to blob URL for display
-			const blob = tryonApiService.base64ToBlob(resultImage);
+			const blob = tryonApiService.base64ToBlob(result.tryonImage);
 			const imageUrl = URL.createObjectURL(blob);
+			const sizeImage = tryonApiService.base64ToBlob(result.sizeImage);
+			const sizeImageUrl = URL.createObjectURL(sizeImage);
 
 			// Store in cache
-			setCachedTryonResult(imageUrl, upperId, lowerId);
-			setTryonResultImage(imageUrl);
+			setCachedTryonResult({
+				result: { ...result, tryonImage: imageUrl, sizeImage: sizeImageUrl },
+				upperId,
+				lowerId,
+				selectedFrontImageId
+			});
+			setTryonResult({
+				...result,
+				tryonImage: imageUrl,
+				sizeImage: sizeImageUrl,
+				imageSize: result.imageSize
+			});
+			const bestFitSize = (() => {
+				if (!result || !currentProduct) return null;
+				const upperFitData = result.upperFitData;
+				const lowerFitData = result.lowerFitData;
+				const upperBestFitSize = upperFitData?.size;
+				const lowerBestFitSize = lowerFitData?.size;
+				if (currentProduct?.type === 'upper') {
+					return upperBestFitSize;
+				} else {
+					return lowerBestFitSize;
+				}
+			})();
+			setSelectedSize(bestFitSize || null);
 
 			console.log('Tryon completed successfully:', imageUrl);
 			console.log('Selected products:', {
@@ -214,7 +268,7 @@ function VirtualTryon() {
 		} catch (error) {
 			console.error('Error during tryon process:', error);
 			// Clear the loading image on error
-			setTryonResultImage(null);
+			setTryonResult(null);
 		} finally {
 			setTryonLoading(false);
 		}
@@ -230,7 +284,7 @@ function VirtualTryon() {
 				<span className='flex items-center justify-center gap-2'>
 					<TryonLoading isLoading={isTryonLoading} />
 					{isTryonLoading ? (
-						<span className='flex items-center justify-center gap-2'>Please wait...</span>
+						<span className='flex items-center justify-center gap-2'>{t('common.pleaseWait')}</span>
 					) : (
 						<span className='flex items-center justify-center gap-2'>
 							{t('common.virtualTryOn')}

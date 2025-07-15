@@ -39,7 +39,11 @@
 		"personalStylistWithAI": "Personal Stylist with AI",
 		"processingYourVirtualTryOn": "Processing your virtual Try-On...",
 		"pleaseWait": "Please wait...",
-		"review": "{{count}} reviews"
+		"review": "{{count}} reviews",
+		"sizeGuide": "Size guide",
+		"upper": "Upper",
+		"lower": "Lower",
+		"bestFit": "Best fit: {{size}}"
 	},
 	"getUserModelImage": {
 		"steps": {

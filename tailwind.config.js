@@ -10,17 +10,12 @@ module.exports = {
 			'black-600': '#605F5F',
 			'black-500': '#807E7E',
 			'black-400': '#A7A7A7',
+			'black-300': '#CBCBCB',
 			'black-200': '#EAEAEA',
-			'black-100': '#F5F5F5'
+			'black-100': '#F5F5F5',
+			primary: '#064EF7'
 		},
-		extend: {
-			keyframes: {
-				loading: {
-					'0%': { transform: 'translateX(-100%)' },
-					'100%': { transform: 'translateX(100%)' }
-				}
-			}
-		}
+		extend: {}
 	},
 	plugins: [require('./src/lib/plugins/gradient')]
 };

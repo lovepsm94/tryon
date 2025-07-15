@@ -8,7 +8,9 @@
 		"image": "/models/1.jpg",
 		"product": "/products/1.jpg",
 		"category": "women",
-		"type": "lower"
+		"type": "lower",
+		"sizes": "/sizes/1.csv",
+		"inseam_type": "long"
 	},
 	{
 		"id": 2,
@@ -19,7 +21,9 @@
 		"image": "/models/2.jpg",
 		"product": "/products/2.jpg",
 		"category": "women",
-		"type": "lower"
+		"type": "lower",
+		"sizes": "/sizes/2.csv",
+		"inseam_type": "long"
 	},
 	{
 		"id": 3,
@@ -30,7 +34,9 @@
 		"image": "/models/3.jpg",
 		"product": "/products/3.jpg",
 		"category": "women",
-		"type": "upper"
+		"type": "upper",
+		"sizes": "/sizes/3.csv",
+		"sleeve_type": "long"
 	},
 	{
 		"id": 4,
@@ -41,7 +47,9 @@
 		"image": "/models/4.jpg",
 		"product": "/products/4.jpg",
 		"category": "women",
-		"type": "upper"
+		"type": "upper",
+		"sizes": "/sizes/4.csv",
+		"sleeve_type": "less"
 	},
 	{
 		"id": 5,
@@ -52,7 +60,9 @@
 		"image": "/models/5.jpg",
 		"product": "/products/5.jpg",
 		"category": "women",
-		"type": "upper"
+		"type": "upper",
+		"sizes": "/sizes/5.csv",
+		"sleeve_type": "short"
 	},
 	{
 		"id": 6,
@@ -63,7 +73,9 @@
 		"image": "/models/6.jpg",
 		"product": "/products/6.jpg",
 		"category": "women",
-		"type": "upper"
+		"type": "upper",
+		"sizes": "/sizes/6.csv",
+		"sleeve_type": "less"
 	},
 	{
 		"id": 7,
@@ -74,7 +86,9 @@
 		"image": "/models/7.jpg",
 		"product": "/products/7.jpg",
 		"category": "men",
-		"type": "lower"
+		"type": "lower",
+		"sizes": "/sizes/7.csv",
+		"inseam_type": "long"
 	},
 	{
 		"id": 8,
@@ -85,7 +99,9 @@
 		"image": "/models/8.jpg",
 		"product": "/products/8.jpg",
 		"category": "men",
-		"type": "lower"
+		"type": "lower",
+		"sizes": "/sizes/8.csv",
+		"inseam_type": "short"
 	},
 	{
 		"id": 10,
@@ -96,7 +112,9 @@
 		"image": "/models/10.jpg",
 		"product": "/products/10.jpg",
 		"category": "women",
-		"type": "upper"
+		"type": "upper",
+		"sizes": "/sizes/10.csv",
+		"sleeve_type": "long"
 	},
 	{
 		"id": 11,
@@ -107,7 +125,9 @@
 		"image": "/models/11.jpg",
 		"product": "/products/11.jpg",
 		"category": "men",
-		"type": "lower"
+		"type": "lower",
+		"sizes": "/sizes/11.csv",
+		"inseam_type": "long"
 	},
 	{
 		"id": 12,
@@ -118,7 +138,9 @@
 		"image": "/models/12.jpg",
 		"product": "/products/12.jpg",
 		"category": "men",
-		"type": "upper"
+		"type": "upper",
+		"sizes": "/sizes/12.csv",
+		"sleeve_type": "short"
 	},
 	{
 		"id": 13,
@@ -129,7 +151,9 @@
 		"image": "/models/13.jpg",
 		"product": "/products/13.jpg",
 		"category": "men",
-		"type": "upper"
+		"type": "upper",
+		"sizes": "/sizes/13.csv",
+		"sleeve_type": "short"
 	},
 	{
 		"id": 14,
@@ -140,7 +164,9 @@
 		"image": "/models/14.jpg",
 		"product": "/products/14.jpg",
 		"category": "men",
-		"type": "upper"
+		"type": "upper",
+		"sizes": "/sizes/14.csv",
+		"sleeve_type": "short"
 	},
 	{
 		"id": 15,
@@ -151,7 +177,9 @@
 		"image": "/models/15.jpg",
 		"product": "/products/15.jpg",
 		"category": "men",
-		"type": "upper"
+		"type": "upper",
+		"sizes": "/sizes/15.csv",
+		"sleeve_type": "long"
 	},
 	{
 		"id": 16,
@@ -162,7 +190,9 @@
 		"image": "/models/16.jpg",
 		"product": "/products/16.jpg",
 		"category": "men",
-		"type": "upper"
+		"type": "upper",
+		"sizes": "/sizes/16.csv",
+		"sleeve_type": "short"
 	},
 	{
 		"id": 17,
@@ -173,7 +203,9 @@
 		"image": "/models/17.jpg",
 		"product": "/products/17.jpg",
 		"category": "women",
-		"type": "lower"
+		"type": "lower",
+		"sizes": "/sizes/17.csv",
+		"inseam_type": "long"
 	},
 	{
 		"id": 18,
@@ -184,7 +216,9 @@
 		"image": "/models/18.jpg",
 		"product": "/products/18.jpg",
 		"category": "women",
-		"type": "lower"
+		"type": "lower",
+		"sizes": "/sizes/18.csv",
+		"inseam_type": "short"
 	},
 	{
 		"id": 19,
@@ -195,6 +229,8 @@
 		"image": "/models/19.jpg",
 		"product": "/products/19.jpg",
 		"category": "women",
-		"type": "upper"
+		"type": "upper",
+		"sizes": "/sizes/19.csv",
+		"sleeve_type": "short"
 	}
 ]

@@ -84,7 +84,7 @@ const Modal = ({ isOpen, onClose, children, contentClassName }: ModalProps) => {
 	const content: React.ReactNode = (
 		<div
 			className={cn(
-				'fixed inset-0 z-50 flex items-center justify-center p-4 transition-opacity duration-500 ease-out',
+				'fixed inset-0 z-[9000] flex items-center justify-center p-4 transition-opacity duration-500 ease-out',
 				isVisible ? 'opacity-100' : 'opacity-0',
 				isVisible ? 'pointer-events-auto' : 'pointer-events-none'
 			)}
@@ -108,13 +108,12 @@ const Modal = ({ isOpen, onClose, children, contentClassName }: ModalProps) => {
 				)}
 				role='dialog'
 				aria-modal='true'
+				onClick={(e) => e.stopPropagation()}
 			>
 				{/* Close button
 				<CloseIcon className='w-5 h-5 absolute top-[30px] right-6 cursor-pointer' onClick={handleClose} /> */}
 
-				<div className='p-6' onClick={(e) => e.stopPropagation()}>
-					{children}
-				</div>
+				{children}
 			</div>
 		</div>
 	);

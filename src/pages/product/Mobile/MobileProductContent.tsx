@@ -10,13 +10,14 @@ import ProductVariants from '@/pages/product/Mobile/ProductVariants';
 import RelatedProducts from '@/pages/product/Mobile/RelatedProducts';
 
 function MobileProductContent() {
-	const { tryonResultImage } = useProduct();
+	const { tryonResult, isLoadingSizeChart, isTryonLoading } = useProduct();
+	if (isLoadingSizeChart) return null;
 
 	return (
 		<div className='mt-[62px]'>
 			<Header textColor='text-dark' />
 			<div className='px-4 pb-8'>
-				{tryonResultImage ? <TryonResult /> : <ProductGallery />}
+				{tryonResult || isTryonLoading ? <TryonResult /> : <ProductGallery />}
 				<ProductInfo />
 				<ProductActions />
 				<ProductVariants />

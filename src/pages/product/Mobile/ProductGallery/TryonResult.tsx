@@ -1,8 +1,9 @@
-import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { useProduct } from '@/contexts/ProductContext';
 import { ReactComponent as CloseIcon } from '@/assets/close.svg';
 import { TryonLoading } from '@/components/ui';
+import Switch from '@/components/ui/Switch';
+import { useProduct } from '@/contexts/ProductContext';
+import SizeGuide from '@/pages/product/Mobile/ProductGallery/SizeGuide';
+import { useTranslation } from 'react-i18next';
 
 interface TryonResultProps {
 	onClose?: () => void;
@@ -10,19 +11,50 @@ interface TryonResultProps {
 
 function TryonResult({ onClose }: TryonResultProps) {
 	const { t } = useTranslation();
-	const { tryonResultImage, setTryonResultImage, isTryonLoading } = useProduct();
+	const {
+		tryonResult,
+		setTryonResult,
+		isTryonLoading,
+		isShowSizeGuide,
+		tryonImage,
+		setIsShowSizeGuide,
+		setSelectedSize,
+		currentProduct
+	} = useProduct();
+
+	const bestFitSize = (() => {
+		if (!tryonResult || !currentProduct) return null;
+		const upperFitData = tryonResult.upperFitData;
+		const lowerFitData = tryonResult.lowerFitData;
+		const upperBestFitSize = upperFitData?.size;
+		const lowerBestFitSize = lowerFitData?.size;
+		if (currentProduct?.type === 'upper') {
+			return upperBestFitSize;
+		} else {
+			return lowerBestFitSize;
+		}
+	})();
 
 	const handleClose = () => {
-		setTryonResultImage(null);
+		setIsShowSizeGuide(false);
+		setTryonResult(null);
 		onClose?.();
 	};
 
-	if (!tryonResultImage) return null;
+	const handleHideSizeGuide = () => {
+		setIsShowSizeGuide(false);
+		setSelectedSize(bestFitSize || null);
+	};
+
+	const handleShowSizeGuide = () => {
+		setIsShowSizeGuide(true);
+		setSelectedSize(bestFitSize || null);
+	};
 
 	return (
-		<div className='relative h-[457px] md:h-full bg-gray-50 rounded-lg overflow-hidden'>
+		<div className='relative h-[457px] md:h-full bg-gray-50 overflow-hidden'>
 			{/* Header with close button */}
-			<div className='absolute top-4 right-4 z-10'>
+			<div className='absolute top-4 right-4 z-50'>
 				<button
 					onClick={handleClose}
 					className='flex items-center justify-center w-8 h-8 bg-white/80 backdrop-blur-sm rounded-full shadow-lg hover:bg-white transition-colors'
@@ -32,22 +64,34 @@ function TryonResult({ onClose }: TryonResultProps) {
 			</div>
 
 			{/* Tryon result image */}
-			<div className='w-full h-full flex items-center justify-center'>
-				<img
-					src={tryonResultImage}
-					alt={t('common.virtualTryOn')}
-					className='w-full h-full object-cover object-center'
-				/>
-			</div>
+			{(tryonResult?.tryonImage || tryonImage) && (
+				<div className='w-full h-full'>
+					<img
+						src={tryonResult?.tryonImage || tryonImage || ''}
+						alt={t('common.virtualTryOn')}
+						className='w-full h-full object-cover object-center'
+					/>
+				</div>
+			)}
+			{isShowSizeGuide && <SizeGuide />}
 
 			{/* Loading overlay */}
 			{isTryonLoading && (
-				<div className='absolute inset-0 bg-gradient opacity-90 flex items-center justify-center z-20'></div>
+				<div className='absolute inset-0 bg-gradient opacity-90 flex items-center justify-center z-[60]'></div>
 			)}
 			{isTryonLoading && (
-				<div className='absolute inset-0 rounded-lg p-6 flex flex-col items-center gap-4 justify-center text-white z-30'>
+				<div className='absolute inset-0 rounded-lg p-6 flex flex-col items-center gap-4 justify-center text-white z-[60]'>
 					<TryonLoading isLoading={true} />
 					<p className='text-gray-700 font-medium text-center'>{t('common.processingYourVirtualTryOn')}</p>
+				</div>
+			)}
+			{tryonResult && !isTryonLoading && (
+				<div
+					className='absolute bottom-4 right-4 p-2 z-20 bg-white text-dark text-[13px] font-semibold cursor-pointer flex gap-2 items-center rounded-xl'
+					onClick={isShowSizeGuide ? handleHideSizeGuide : handleShowSizeGuide}
+				>
+					<p className='text-[14px] leading-[20px]'>{t('common.sizeGuide')}</p>
+					<Switch value={isShowSizeGuide} />
 				</div>
 			)}
 		</div>

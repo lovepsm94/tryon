@@ -69,7 +69,7 @@ function WeightHeightInput({ onCancel, onContinue }: WeightHeightInputProps) {
 	};
 
 	return (
-		<div className='h-full flex flex-col p-6 pb-10 items-center md:p-0'>
+		<div className='h-full flex flex-col items-center p-6'>
 			<p className='font-medium text-[24px] leading-[32px] text-black-900 text-center'>
 				{t('common.enterYourWeightAndHeight')}
 			</p>

@@ -11,7 +11,8 @@ import ProductGallery from '@/pages/product/PC/ProductGallery';
 import ProductTabs from '@/pages/product/PC/ProductTabs';
 
 function PCProductContent() {
-	const { tryonResultImage } = useProduct();
+	const { tryonResult, isLoadingSizeChart, isTryonLoading } = useProduct();
+	if (isLoadingSizeChart) return null;
 
 	return (
 		<>
@@ -19,7 +20,7 @@ function PCProductContent() {
 				<Header textColor='text-dark' />
 				<div className='flex md:gap-8 lg:gap-[72px]'>
 					<div className='w-1/2 max-w-[700px] shrink-0'>
-						{tryonResultImage ? <TryonResult /> : <ProductGallery />}
+						{tryonResult || isTryonLoading ? <TryonResult /> : <ProductGallery />}
 					</div>
 					<div className='grow min-w-0'>
 						<ProductInfo />

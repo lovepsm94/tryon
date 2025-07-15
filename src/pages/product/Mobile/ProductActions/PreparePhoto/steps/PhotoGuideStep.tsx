@@ -8,8 +8,8 @@ interface PhotoGuideStepProps {
 const PhotoGuideStep: React.FC<PhotoGuideStepProps> = ({ onContinue }) => {
 	const { t } = useTranslation();
 	return (
-		<>
-			<div className='flex-grow flex items-center justify-center md:h-[calc(100vh-350px)]'>
+		<div className='flex flex-col h-full py-6'>
+			<div className='flex-grow flex items-center justify-center'>
 				<PhotoGuide />
 			</div>
 			<p className='text-center text-[#1B1D21] mt-2 mb-4'>
@@ -21,7 +21,7 @@ const PhotoGuideStep: React.FC<PhotoGuideStepProps> = ({ onContinue }) => {
 			>
 				{t('common.gotIt')}
 			</button>
-		</>
+		</div>
 	);
 };
 

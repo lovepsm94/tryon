@@ -188,8 +188,8 @@ const SideViewStep: React.FC<SideViewStepProps> = ({ onContinue }) => {
 	}, [stopDetection]);
 
 	return (
-		<>
-			<div className='w-full max-w-md grow rounded-2xl mx-auto mb-4 flex items-center justify-center overflow-hidden relative md:h-[calc(100vh-350px)]'>
+		<div className='h-full flex flex-col'>
+			<div className='w-full max-w-md grow rounded-2xl mx-auto mb-4 flex items-center justify-center overflow-hidden relative '>
 				{/* Countdown overlay */}
 				{isCountingDown && (
 					<div className='absolute inset-0 flex items-center justify-center z-50'>
@@ -263,7 +263,7 @@ const SideViewStep: React.FC<SideViewStepProps> = ({ onContinue }) => {
 					</div>
 				</div>
 			</div>
-		</>
+		</div>
 	);
 };
 

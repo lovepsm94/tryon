@@ -9,16 +9,10 @@ export interface TryonRequest {
 	front_image: File;
 	side_image?: File;
 	lower_garment?: File;
-	weight?: number; // in kg
-	height?: number; // in cm
-}
-
-// Helper type for validation
-export interface ValidTryonRequest {
-	upper_garment?: File;
-	front_image: File;
-	side_image?: File;
-	lower_garment?: File;
+	upper_size_chart?: File;
+	lower_size_chart?: File;
+	sleeve_type?: 'less' | 'short' | 'long';
+	inseam_type?: 'short' | 'long';
 	weight?: number; // in kg
 	height?: number; // in cm
 }
@@ -27,10 +21,43 @@ export interface TryonResponse {
 	task_id: string;
 }
 
+export interface UpperFitData {
+	size: string;
+	measure: {
+		columns: string[];
+		index: number[];
+		data: string[][];
+	};
+	data_points: {
+		Shoulder?: number[][];
+		Sleeve?: number[][];
+		Width?: number[][];
+	};
+}
+
+export interface LowerFitData {
+	size: string;
+	measure: {
+		columns: string[];
+		index: number[];
+		data: string[][];
+	};
+	data_points: {
+		Waist?: number[][];
+		Hip?: number[][];
+		Inseam?: number[][];
+	};
+}
+
 export interface TryonStatusResponse {
 	status: 'PENDING' | 'SUCCESS' | 'FAILURE';
+	task_id?: string;
 	result?: {
 		tryon_image: string; // base64 image
+		size_image: string; // base64 image
+		image_size: [number, number]; // [width, height]
+		upper_fit_data?: UpperFitData;
+		lower_fit_data?: LowerFitData;
 	};
 	error?: string;
 }
@@ -46,6 +73,7 @@ class TryonApiService {
 
 			// Add required fields
 			formData.append('front_image', request.front_image);
+			formData.append('human_image', request.front_image);
 
 			// Add optional fields only if they exist
 			if (request.upper_garment) {
@@ -57,13 +85,24 @@ class TryonApiService {
 			if (request.lower_garment) {
 				formData.append('lower_garment', request.lower_garment);
 			}
+			if (request.upper_size_chart) {
+				formData.append('upper_size_chart', request.upper_size_chart);
+			}
+			if (request.lower_size_chart) {
+				formData.append('lower_size_chart', request.lower_size_chart);
+			}
 			if (request.weight) {
 				formData.append('weight', request.weight.toString());
 			}
 			if (request.height) {
 				formData.append('height', request.height.toString());
 			}
-
+			if (request.sleeve_type) {
+				formData.append('sleeve_type', request.sleeve_type);
+			}
+			if (request.inseam_type) {
+				formData.append('inseam_type', request.inseam_type);
+			}
 			const response = await axios.post<TryonResponse>(`${API_BASE_URL}/tryon`, formData, {
 				headers: {
 					'Content-Type': 'multipart/form-data'
@@ -95,7 +134,17 @@ class TryonApiService {
 	/**
 	 * Poll for tryon completion
 	 */
-	async pollTryonCompletion(taskId: string, maxAttempts = 30, intervalMs = 2000): Promise<string> {
+	async pollTryonCompletion(
+		taskId: string,
+		maxAttempts = 30,
+		intervalMs = 2000
+	): Promise<{
+		tryonImage: string;
+		sizeImage: string;
+		imageSize: [number, number];
+		upperFitData?: UpperFitData;
+		lowerFitData?: LowerFitData;
+	}> {
 		let attempts = 0;
 
 		while (attempts < maxAttempts) {
@@ -111,10 +160,17 @@ class TryonApiService {
 					throw new Error(JSON.stringify([status]) || 'Tryon processing failed');
 				}
 
-				// Check for SUCCESS status - return immediately if image is ready
-				if (status.status === 'SUCCESS') {
+				// Check for SUCCESS status - return immediately if images are ready
+				if (status.status === 'SUCCESS' && status.result) {
 					console.log(`Tryon completed successfully on attempt ${attempts + 1}`);
-					return status.result?.tryon_image || '';
+					return {
+						...status.result,
+						tryonImage: status.result.tryon_image || '',
+						sizeImage: status.result.size_image || '',
+						imageSize: status.result.image_size || [0, 0],
+						upperFitData: 'upper_fit_data' in status.result ? status.result.upper_fit_data : undefined,
+						lowerFitData: 'lower_fit_data' in status.result ? status.result.lower_fit_data : undefined
+					};
 				}
 
 				// Wait for PENDING status
@@ -172,16 +228,25 @@ class TryonApiService {
 				// No selection made, use latest image
 				frontImageData = await indexedDBManager.getLatestUserImageBlob('front');
 			}
+			const sideImageData = await indexedDBManager.getLatestUserImageBlob('side');
+
+			if (!sideImageData) {
+				throw new Error('Side view image not found');
+			}
 
 			if (!frontImageData) {
 				throw new Error('Front view image not found');
 			}
 
+			const sideImage = new File([sideImageData.imageBlob], 'side_view.jpg', {
+				type: 'image/jpeg'
+			});
+
 			const frontImage = new File([frontImageData.imageBlob], 'front_view.jpg', {
 				type: 'image/jpeg'
 			});
 
-			return { frontImage, sideImage: undefined };
+			return { frontImage, sideImage };
 		} catch (error) {
 			console.error('Error preparing user images:', error);
 			throw error;
@@ -222,37 +287,22 @@ class TryonApiService {
 		}
 	}
 
-	/**
-	 * Get sleeve type based on product description
-	 */
-	getSleeveType(productName: string): 'less' | 'short' | 'long' {
-		const name = productName.toLowerCase();
-		if (name.includes('sleeveless') || name.includes('tank') || name.includes('vest')) {
-			return 'less';
-		}
-		if (name.includes('short sleeve') || name.includes('tee') || name.includes('shirt')) {
-			return 'short';
-		}
-		if (name.includes('long sleeve') || name.includes('sweater') || name.includes('turtleneck')) {
-			return 'long';
-		}
-		// Default to short sleeve for upper garments
-		return 'short';
-	}
+	async fetchProductSizeChart(sizeChartPath: string, fileName: string): Promise<File> {
+		try {
+			const response = await fetch(sizeChartPath);
+			if (!response.ok) {
+				throw new Error(`Failed to fetch size chart: ${response.statusText}`);
+			}
 
-	/**
-	 * Get inseam type based on product description
-	 */
-	getInseamType(productName: string): 'less' | 'short' | 'long' {
-		const name = productName.toLowerCase();
-		if (name.includes('short') || name.includes('mini')) {
-			return 'short';
+			const blob = await response.blob();
+			const file = new File([blob], fileName, { type: 'text/csv' });
+
+			return file;
+		} catch (error) {
+			alert('Failed to fetch product size chart');
+			console.error('Error fetching product size chart:', error);
+			throw error;
 		}
-		if (name.includes('long') || name.includes('pants') || name.includes('jeans')) {
-			return 'long';
-		}
-		// Default to short for lower garments
-		return 'short';
 	}
 }
 
