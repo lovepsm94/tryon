@@ -282,7 +282,7 @@ function VirtualTryon() {
 				disabled={isTryonLoading}
 			>
 				<span className='flex items-center justify-center gap-2'>
-					<TryonLoading isLoading={isTryonLoading} />
+					<TryonLoading />
 					{isTryonLoading ? (
 						<span className='flex items-center justify-center gap-2'>{t('common.pleaseWait')}</span>
 					) : (

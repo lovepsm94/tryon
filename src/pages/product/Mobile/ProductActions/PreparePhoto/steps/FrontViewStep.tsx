@@ -5,8 +5,10 @@ import { ReactComponent as FrontPose } from '@/assets/front-pose.svg';
 import { frontPose } from '@/pages/product/Mobile/ProductActions/PreparePhoto/templates';
 import CountdownAnimation from '../CountdownAnimation';
 import { indexedDBManager } from '@/utils/indexedDBManager';
+import { tryonApiService } from '@/utils/tryonApi';
 
 import { usePoseDetection } from '@/hooks/usePoseDetection';
+import { ReactComponent as Spinner } from '@/assets/spinner.svg';
 
 interface FrontViewStepProps {
 	onContinue: () => void;
@@ -17,18 +19,17 @@ const FrontViewStep: React.FC<FrontViewStepProps> = ({ onContinue }) => {
 	const { videoRef, startCamera, stopCamera } = useWebcam();
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const containerRef = useRef<HTMLDivElement>(null);
-	const { poseResult, startDetection, stopDetection } = usePoseDetection(videoRef, canvasRef, frontPose, {
+	const { isValidPose, startDetection, stopDetection } = usePoseDetection(videoRef, canvasRef, frontPose, {
 		maxOffsetX: 150,
 		maxOffsetY: 150
 	});
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const [poseStableTime, setPoseStableTime] = useState(0);
-	const [isPoseValid, setIsPoseValid] = useState(false);
 	const [isCountingDown, setIsCountingDown] = useState(false);
 	const [capturedImageUrl, setCapturedImageUrl] = useState<string | null>(null);
 	const [capturedImageBlob, setCapturedImageBlob] = useState<Blob | null>(null);
 	const [isPhotoTaken, setIsPhotoTaken] = useState(false);
 	const [isSaving, setIsSaving] = useState(false);
+	const poseStableTimeRef = useRef(0);
 
 	// Capture photo from video stream
 	const capturePhoto = async () => {
@@ -83,8 +84,7 @@ const FrontViewStep: React.FC<FrontViewStepProps> = ({ onContinue }) => {
 		setCapturedImageUrl(null);
 		setCapturedImageBlob(null);
 		setIsPhotoTaken(false);
-		setPoseStableTime(0);
-		setIsPoseValid(false);
+		poseStableTimeRef.current = 0;
 		setIsSaving(false);
 		startCamera();
 		startDetection();
@@ -102,8 +102,31 @@ const FrontViewStep: React.FC<FrontViewStepProps> = ({ onContinue }) => {
 
 			console.log('Front view image saved to IndexedDB with ID:', imageId);
 
+			// Convert blob to File for API call
+			const humanImageFile = new File([capturedImageBlob], 'front_view.jpg', {
+				type: 'image/jpeg'
+			});
+
+			// Get mask points from API
+			try {
+				const maskPointsResponse = await tryonApiService.getMaskPoints(humanImageFile);
+
+				// Save mask points to IndexedDB with imageId reference
+				const maskPointsId = await indexedDBManager.saveMaskPoints(
+					imageId,
+					maskPointsResponse.masks.upper,
+					maskPointsResponse.masks.lower,
+					maskPointsResponse.masks.full
+				);
+
+				console.log('Mask points saved to IndexedDB with ID:', maskPointsId, 'for image ID:', imageId);
+				onContinue();
+			} catch (maskError) {
+				console.error('Error getting or saving mask points:', maskError);
+				// Continue with the flow even if mask points fail
+			}
+
 			// Notify parent component with the image URL
-			onContinue();
 		} catch (error) {
 			console.error('Error saving image to IndexedDB:', error);
 		} finally {
@@ -114,7 +137,9 @@ const FrontViewStep: React.FC<FrontViewStepProps> = ({ onContinue }) => {
 	useEffect(() => {
 		if (!isPhotoTaken) {
 			startCamera();
+			return;
 		}
+		stopDetection();
 		return () => {
 			stopCamera();
 		};
@@ -122,19 +147,10 @@ const FrontViewStep: React.FC<FrontViewStepProps> = ({ onContinue }) => {
 
 	// Start pose detection when camera is ready
 	useEffect(() => {
-		if (videoRef.current) {
-			console.log('startDetection');
+		if (videoRef.current && !isPhotoTaken) {
 			startDetection();
 		}
 	}, [startDetection, isPhotoTaken]);
-
-	// Handle pose detection results
-	useEffect(() => {
-		if (poseResult && !isPhotoTaken) {
-			const isValid = poseResult.isValidPose;
-			setIsPoseValid(isValid);
-		}
-	}, [poseResult, isPhotoTaken]);
 
 	// Track how long the pose has been stable and start countdown
 	useEffect(() => {
@@ -142,22 +158,19 @@ const FrontViewStep: React.FC<FrontViewStepProps> = ({ onContinue }) => {
 
 		if (isPhotoTaken) return;
 
-		if (isPoseValid) {
+		if (isValidPose) {
 			interval = setInterval(() => {
-				setPoseStableTime((prev) => {
-					const newTime = prev + 0.1;
-					if (newTime >= 2.0) {
-						// Pose has been stable for 2 seconds, start countdown
-						if (!isCountingDown) {
-							setIsCountingDown(true);
-						}
-						return 2.0;
+				poseStableTimeRef.current = poseStableTimeRef.current + 0.1;
+				if (poseStableTimeRef.current >= 2.0) {
+					// Pose has been stable for 2 seconds, start countdown
+					if (!isCountingDown) {
+						setIsCountingDown(true);
 					}
-					return newTime;
-				});
+					poseStableTimeRef.current = 2.0;
+				}
 			}, 100);
 		} else {
-			setPoseStableTime(0);
+			poseStableTimeRef.current = 0;
 			setIsCountingDown(false);
 		}
 
@@ -166,7 +179,7 @@ const FrontViewStep: React.FC<FrontViewStepProps> = ({ onContinue }) => {
 				clearInterval(interval);
 			}
 		};
-	}, [isPoseValid, isCountingDown, isPhotoTaken]);
+	}, [isValidPose, isCountingDown, isPhotoTaken]);
 
 	// Cleanup pose detection on unmount
 	useEffect(() => {
@@ -182,7 +195,7 @@ const FrontViewStep: React.FC<FrontViewStepProps> = ({ onContinue }) => {
 				{isCountingDown && (
 					<div className={`absolute inset-0 flex items-center justify-center z-50`}>
 						<CountdownAnimation
-							initialCount={3}
+							initialCount={2}
 							onComplete={() => {
 								setIsCountingDown(false);
 							}}
@@ -242,11 +255,12 @@ const FrontViewStep: React.FC<FrontViewStepProps> = ({ onContinue }) => {
 							{t('common.retake')}
 						</button>
 						<button
-							className='bg-gradient h-[44px] text-white text-[16px] leading-[24px]'
+							className='bg-gradient h-[44px] text-white text-[16px] leading-[24px] flex items-center justify-center gap-1'
 							onClick={acceptPhoto}
 							disabled={isSaving}
 						>
-							{t('common.accept')}
+							{isSaving && <Spinner className='w-6 h-6' />}
+							{isSaving ? t('common.processing') : t('common.accept')}
 						</button>
 					</div>
 				</div>

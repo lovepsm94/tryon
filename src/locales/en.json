@@ -43,7 +43,8 @@
 		"sizeGuide": "Size guide",
 		"upper": "Upper",
 		"lower": "Lower",
-		"bestFit": "Best fit: {{size}}"
+		"bestFit": "Best fit: {{size}}",
+		"processing": "Processing..."
 	},
 	"getUserModelImage": {
 		"steps": {

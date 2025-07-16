@@ -17,19 +17,16 @@ const SideViewStep: React.FC<SideViewStepProps> = ({ onContinue }) => {
 	const { videoRef, startCamera, stopCamera } = useWebcam();
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const containerRef = useRef<HTMLDivElement>(null);
-	const { poseResult, startDetection, stopDetection } = usePoseDetection(videoRef, canvasRef, sidePose, {
+	const { isValidPose, startDetection, stopDetection } = usePoseDetection(videoRef, canvasRef, sidePose, {
 		maxOffsetX: 120,
 		maxOffsetY: 150
 	});
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const [poseStableTime, setPoseStableTime] = useState(0);
-	const [isPoseValid, setIsPoseValid] = useState(false);
 	const [isCountingDown, setIsCountingDown] = useState(false);
 	const [capturedImageUrl, setCapturedImageUrl] = useState<string | null>(null);
 	const [capturedImageBlob, setCapturedImageBlob] = useState<Blob | null>(null);
 	const [isPhotoTaken, setIsPhotoTaken] = useState(false);
 	const [isSaving, setIsSaving] = useState(false);
-
+	const poseStableTimeRef = useRef(0);
 	// Capture photo from video stream
 	const capturePhoto = async () => {
 		console.log('capturePhoto');
@@ -84,8 +81,7 @@ const SideViewStep: React.FC<SideViewStepProps> = ({ onContinue }) => {
 		setCapturedImageUrl(null);
 		setCapturedImageBlob(null);
 		setIsPhotoTaken(false);
-		setPoseStableTime(0);
-		setIsPoseValid(false);
+		poseStableTimeRef.current = 0;
 		setIsCountingDown(false);
 		setIsSaving(false);
 		startCamera();
@@ -122,11 +118,12 @@ const SideViewStep: React.FC<SideViewStepProps> = ({ onContinue }) => {
 			setIsSaving(false);
 		}
 	};
-
 	useEffect(() => {
 		if (!isPhotoTaken) {
 			startCamera();
+			return;
 		}
+		stopDetection();
 		return () => {
 			stopCamera();
 		};
@@ -134,19 +131,10 @@ const SideViewStep: React.FC<SideViewStepProps> = ({ onContinue }) => {
 
 	// Start pose detection when camera is ready
 	useEffect(() => {
-		if (videoRef.current) {
-			console.log('startDetection');
+		if (videoRef.current && !isPhotoTaken) {
 			startDetection();
 		}
 	}, [startDetection, isPhotoTaken]);
-
-	// Handle pose detection results
-	useEffect(() => {
-		if (poseResult && !isPhotoTaken) {
-			const isValid = poseResult.isValidPose;
-			setIsPoseValid(isValid);
-		}
-	}, [poseResult, isPhotoTaken]);
 
 	// Track how long the pose has been stable and start countdown
 	useEffect(() => {
@@ -154,22 +142,19 @@ const SideViewStep: React.FC<SideViewStepProps> = ({ onContinue }) => {
 
 		if (isPhotoTaken) return;
 
-		if (isPoseValid) {
+		if (isValidPose) {
 			interval = setInterval(() => {
-				setPoseStableTime((prev) => {
-					const newTime = prev + 0.1;
-					if (newTime >= 2.0) {
-						// Pose has been stable for 2 seconds, start countdown
-						if (!isCountingDown) {
-							setIsCountingDown(true);
-						}
-						return 2.0;
+				poseStableTimeRef.current = poseStableTimeRef.current + 0.1;
+				if (poseStableTimeRef.current >= 2.0) {
+					// Pose has been stable for 2 seconds, start countdown
+					if (!isCountingDown) {
+						setIsCountingDown(true);
 					}
-					return newTime;
-				});
+					poseStableTimeRef.current = 2.0;
+				}
 			}, 100);
 		} else {
-			setPoseStableTime(0);
+			poseStableTimeRef.current = 0;
 			setIsCountingDown(false);
 		}
 
@@ -178,7 +163,7 @@ const SideViewStep: React.FC<SideViewStepProps> = ({ onContinue }) => {
 				clearInterval(interval);
 			}
 		};
-	}, [isPoseValid, isCountingDown, isPhotoTaken]);
+	}, [isValidPose, isCountingDown, isPhotoTaken]);
 
 	// Cleanup pose detection on unmount
 	useEffect(() => {
@@ -194,7 +179,7 @@ const SideViewStep: React.FC<SideViewStepProps> = ({ onContinue }) => {
 				{isCountingDown && (
 					<div className='absolute inset-0 flex items-center justify-center z-50'>
 						<CountdownAnimation
-							initialCount={3}
+							initialCount={2}
 							onComplete={() => {
 								setIsCountingDown(false);
 							}}

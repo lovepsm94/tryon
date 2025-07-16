@@ -15,7 +15,7 @@ export interface PoseResult {
 
 export interface UsePoseDetectionReturn {
 	isDetecting: boolean;
-	poseResult: PoseResult | null;
+	isValidPose: boolean;
 	startDetection: () => void;
 	stopDetection: () => void;
 	error: string | null;
@@ -33,8 +33,8 @@ export const usePoseDetection = (
 	}
 ): UsePoseDetectionReturn => {
 	const [isDetecting, setIsDetecting] = useState(false);
-	const [poseResult, setPoseResult] = useState<PoseResult | null>(null);
 	const [error, setError] = useState<string | null>(null);
+	const [isValidPose, setIsValidPose] = useState(false);
 	const detectorRef = useRef<poseDetection.PoseDetector | null>(null);
 	const animationFrameRef = useRef<number | null>(null);
 	const isInitializedRef = useRef(false);
@@ -173,7 +173,7 @@ export const usePoseDetection = (
 		(poses: poseDetection.Pose[]) => {
 			const importantKeypoints = [5, 6, 9, 10, 11, 12, 15, 16]; // left shoulder, right shoulder, left elbow, right elbow, left hip, right hip, left ankle, right ankle;
 			if (!poses || poses.length === 0) {
-				setPoseResult({ isValidPose: false, landmarks: [], poseMatchScore: 0 });
+				setIsValidPose(false);
 				return;
 			}
 
@@ -183,7 +183,7 @@ export const usePoseDetection = (
 			// Get video dimensions for ratio calculation
 			const video = videoRef.current;
 			if (!video || video.videoWidth === 0 || video.videoHeight === 0) {
-				setPoseResult({ isValidPose: false, landmarks: [], poseMatchScore: 0 });
+				setIsValidPose(false);
 				return;
 			}
 
@@ -227,16 +227,9 @@ export const usePoseDetection = (
 				return !!landmarks[keypoint];
 			});
 
-			const poseMatchScore = passedPoints;
 			const isValidPose = passedPoints >= 6 && importantKeypointsExist;
 
-			const result: PoseResult = {
-				isValidPose,
-				landmarks,
-				poseMatchScore
-			};
-
-			setPoseResult(result);
+			setIsValidPose(isValidPose);
 		},
 		[poseTemplate, poseValidationConfig, videoRef]
 	);
@@ -256,7 +249,7 @@ export const usePoseDetection = (
 			setError(null);
 		} catch (err) {
 			console.error('Failed to initialize pose detection:', err);
-			setError('Không thể khởi tạo pose detection');
+			setError('Failed to initialize pose detection');
 		}
 	}, []);
 
@@ -340,6 +333,7 @@ export const usePoseDetection = (
 
 	// Stop pose detection
 	const stopDetection = useCallback(() => {
+		console.log('stopDetection');
 		setIsDetecting(false);
 		if (animationFrameRef.current) {
 			cancelAnimationFrame(animationFrameRef.current);
@@ -356,7 +350,7 @@ export const usePoseDetection = (
 
 	return {
 		isDetecting,
-		poseResult,
+		isValidPose,
 		startDetection,
 		stopDetection,
 		error,

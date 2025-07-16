@@ -62,6 +62,17 @@ export interface TryonStatusResponse {
 	error?: string;
 }
 
+export interface MaskPointsResponse {
+	status: string;
+	task_id: string;
+	masks: {
+		upper: number[][];
+		lower: number[][];
+		full: number[][];
+	};
+	elapsed_time: number;
+}
+
 class TryonApiService {
 	/**
 	 * Submit a tryon request
@@ -250,6 +261,33 @@ class TryonApiService {
 		} catch (error) {
 			console.error('Error preparing user images:', error);
 			throw error;
+		}
+	}
+
+	/**
+	 * Get mask points for a human image
+	 */
+	async getMaskPoints(humanImage: File, timeout = 30, pollInterval = 0.5): Promise<MaskPointsResponse> {
+		try {
+			const formData = new FormData();
+			formData.append('human_image', humanImage);
+			formData.append('timeout', timeout.toString());
+			formData.append('poll_interval', pollInterval.toString());
+
+			const response = await axios.post<MaskPointsResponse>(`${API_BASE_URL}/get_garment_mask`, formData, {
+				headers: {
+					'Content-Type': 'multipart/form-data'
+				}
+			});
+
+			if (response.data.status !== 'SUCCESS') {
+				throw new Error('Failed to get mask points');
+			}
+
+			return response.data;
+		} catch (error) {
+			console.error('Error getting mask points:', error);
+			throw new Error('Failed to get mask points');
 		}
 	}
 
