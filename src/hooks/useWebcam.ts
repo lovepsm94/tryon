@@ -8,6 +8,23 @@ interface UseWebcamReturn {
 	stopCamera: () => void;
 }
 
+function requestCamera(constraints: MediaStreamConstraints = { video: true, audio: false }) {
+	return new Promise((resolve, reject) => {
+		if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+			navigator.mediaDevices.getUserMedia(constraints).then(resolve).catch(reject);
+		} else {
+			const navAny = navigator as any;
+			const getUserMedia =
+				navAny.getUserMedia || navAny.webkitGetUserMedia || navAny.mozGetUserMedia || navAny.msGetUserMedia;
+			if (getUserMedia) {
+				getUserMedia.call(navigator, constraints, resolve, reject);
+			} else {
+				reject(new Error('getUserMedia is not supported in this browser.'));
+			}
+		}
+	});
+}
+
 export const useWebcam = (): UseWebcamReturn => {
 	const videoRef = useRef<HTMLVideoElement>(null);
 	const streamRef = useRef<MediaStream | null>(null);
@@ -24,22 +41,22 @@ export const useWebcam = (): UseWebcamReturn => {
 			const constraints = {
 				video: {
 					facingMode: 'user',
-					// Request highest possible resolution
 					width: { ideal: 1920, min: 1280 },
 					height: { ideal: 1080, min: 720 },
-					// Request highest possible frame rate for better quality
 					frameRate: { ideal: 30, min: 24 },
-					// Request high quality video
 					aspectRatio: { ideal: 16 / 9 }
-				}
+				},
+				audio: false
 			};
 
-			const stream = await navigator.mediaDevices.getUserMedia(constraints);
-
+			const stream = (await requestCamera(constraints)) as MediaStream;
 			streamRef.current = stream;
-			videoRef.current.srcObject = stream;
+			if ('srcObject' in videoRef.current) {
+				videoRef.current.srcObject = stream;
+			} else {
+				(videoRef.current as any).src = window.URL.createObjectURL(stream as any);
+			}
 			videoRef.current.style.transform = 'scaleX(-1)';
-
 			await videoRef.current.play();
 		} catch (err) {
 			const errorMessage = err instanceof Error ? err.message : 'Failed to access camera';

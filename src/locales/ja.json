@@ -43,7 +43,13 @@
 		"sizeGuide": "Size guide",
 		"upper": "Upper",
 		"lower": "Lower",
-		"bestFit": "Best fit: {{size}}"
+		"bestFit": "Best fit: {{size}}",
+		"processing": "Processing...",
+		"accessDemoModalTitle": "Access Demo Website",
+		"enterYourAccessCode": "Enter Your Access Code",
+		"access": "Access",
+		"accessDemoModalDescription": "This demo requires a special access code. If you don't have one, please <a>contact us</a>.",
+		"accessDemoModalError": "Invalid code. Please try again or request a new one"
 	},
 	"getUserModelImage": {
 		"steps": {
@@ -56,12 +62,12 @@
 				"instruction": "カメラを正面・腰の高さに配置し、全身が画面に収まるように後ろに下がってください。"
 			},
 			"sideView": {
-				"title": "横向きスキャン",
-				"instruction": "90度回転し、ポーズガイドに合わせてまっすぐ立ってください。"
+				"title": "Take photo: Side view",
+				"instruction": "Align your body with the pose guide"
 			},
 			"frontView": {
-				"title": "正面ビュー",
-				"instruction": "カメラを正面に見て、ポーズガイドに従って直立してください。"
+				"title": "Take photo: Front view",
+				"instruction": "Align your body with the pose guide"
 			},
 			"result": {
 				"title": "結果",

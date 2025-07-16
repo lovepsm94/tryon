@@ -14,11 +14,12 @@ type PhotoStep = 'detectCamera' | 'photoGuide' | 'sideView' | 'frontView';
 interface GetUserModelImageProps {
 	onCancel: () => void;
 	onContinue: () => void;
+	showPoseSelection?: boolean;
 }
 
 const steps: PhotoStep[] = ['photoGuide', 'detectCamera', 'sideView', 'frontView'];
 
-const GetUserModelImage: React.FC<GetUserModelImageProps> = ({ onCancel, onContinue }) => {
+const GetUserModelImage: React.FC<GetUserModelImageProps> = ({ onCancel, onContinue, showPoseSelection = false }) => {
 	const { t } = useTranslation();
 	const { isMobile } = useResponsive();
 	const [currentStep, setCurrentStep] = useState<PhotoStep>('photoGuide');
@@ -109,7 +110,7 @@ const GetUserModelImage: React.FC<GetUserModelImageProps> = ({ onCancel, onConti
 			case 'sideView':
 				return <SideViewStep onContinue={handleStepComplete} />;
 			case 'frontView':
-				return <FrontViewStep onContinue={handleStepComplete} />;
+				return <FrontViewStep onContinue={handleStepComplete} showPoseSelection={showPoseSelection} />;
 			default:
 				return null;
 		}
@@ -119,7 +120,7 @@ const GetUserModelImage: React.FC<GetUserModelImageProps> = ({ onCancel, onConti
 		<div
 			className={`h-full flex flex-col mx-auto max-w-md ${isMobile ? 'transition-opacity duration-500 ease-out' : ''} ${showContent ? 'opacity-100' : 'opacity-0'}`}
 		>
-			<h2 className='text-[18px] font-medium text-center mb-4 mt-4'>
+			<h2 className='text-[18px] font-medium text-center mb-4 mt-0 md:mt-4'>
 				{t(`getUserModelImage.steps.${currentStep}.title`)}
 			</h2>
 			<CloseIcon className='absolute top-4 right-4 cursor-pointer' onClick={handleClose} />
@@ -130,7 +131,7 @@ const GetUserModelImage: React.FC<GetUserModelImageProps> = ({ onCancel, onConti
 	);
 
 	if (isMobile) {
-		return <div className='p-4 fixed top-0 left-0 bottom-0 right-0 bg-white z-50 select-none'>{content}</div>;
+		return <div className='p-4 fixed top-0 left-0 bottom-0 right-0 bg-white z-[901] select-none'>{content}</div>;
 	}
 
 	return (

@@ -1,11 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-// import { ReactComponent as CloseIcon } from '@/assets/close.svg';
 import cn from '@/utils/cn';
 
 interface ModalProps {
 	isOpen: boolean;
-	onClose: () => void;
+	onClose?: () => void;
 	children: React.ReactNode;
 	contentClassName?: string;
 }
@@ -68,11 +67,12 @@ const Modal = ({ isOpen, onClose, children, contentClassName }: ModalProps) => {
 	}, [isVisible]);
 
 	const handleClose = () => {
+		if (!onClose) return;
 		if (!isClosing) {
 			setIsClosing(true);
 			setIsVisible(false);
 			setTimeout(() => {
-				onClose();
+				onClose?.();
 			}, 500); // Match with transition duration
 		}
 	};
@@ -110,9 +110,6 @@ const Modal = ({ isOpen, onClose, children, contentClassName }: ModalProps) => {
 				aria-modal='true'
 				onClick={(e) => e.stopPropagation()}
 			>
-				{/* Close button
-				<CloseIcon className='w-5 h-5 absolute top-[30px] right-6 cursor-pointer' onClick={handleClose} /> */}
-
 				{children}
 			</div>
 		</div>

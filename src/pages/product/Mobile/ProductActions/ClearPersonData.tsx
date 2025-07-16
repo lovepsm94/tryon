@@ -3,6 +3,7 @@ import Drawer from '@/components/ui/Drawer';
 import Modal from '@/components/ui/Modal';
 import { useResponsive } from '@/contexts/ResponsiveContext';
 import { indexedDBManager } from '@/utils/indexedDBManager';
+import { localStorageManager } from '@/utils/localStorageManager';
 // import { localStorageManager } from '@/utils/localStorageManager';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -18,8 +19,7 @@ function ClearPersonData() {
 			setIsLoading(true);
 			// Clear IndexedDB data (images)
 			await indexedDBManager.clearAllData();
-			// Clear localStorage data (weight/height)
-			// localStorageManager.clearUserData();
+			localStorageManager.clearUserData();
 		} catch (error) {
 			console.error('Failed to clear user data:', error);
 			// You might want to show an error message to the user here

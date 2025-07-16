@@ -1,5 +1,6 @@
 export * from './cn';
 export * from './sensorSmoothing';
+export * from './keypointSmoothing';
 
 /**
  * Check if the device supports motion sensors

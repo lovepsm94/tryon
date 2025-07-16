@@ -9,8 +9,10 @@ function Product() {
 
 	return (
 		<>
-			<ProductProvider>{isMobile ? <MobileProductContent /> : <PCProductContent />}</ProductProvider>
-			<CameraPoseButton />
+			<ProductProvider>
+				{isMobile ? <MobileProductContent /> : <PCProductContent />}
+				<CameraPoseButton />
+			</ProductProvider>
 		</>
 	);
 }

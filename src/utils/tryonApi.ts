@@ -58,8 +58,21 @@ export interface TryonStatusResponse {
 		image_size: [number, number]; // [width, height]
 		upper_fit_data?: UpperFitData;
 		lower_fit_data?: LowerFitData;
+		state?: string;
+		message?: string;
 	};
 	error?: string;
+}
+
+export interface MaskPointsResponse {
+	status: string;
+	task_id: string;
+	masks: {
+		upper: number[][];
+		lower: number[][];
+		full: number[][];
+	};
+	elapsed_time: number;
 }
 
 class TryonApiService {
@@ -162,6 +175,9 @@ class TryonApiService {
 
 				// Check for SUCCESS status - return immediately if images are ready
 				if (status.status === 'SUCCESS' && status.result) {
+					if (status.result.state === 'error') {
+						throw status.result.message;
+					}
 					console.log(`Tryon completed successfully on attempt ${attempts + 1}`);
 					return {
 						...status.result,
@@ -180,7 +196,7 @@ class TryonApiService {
 
 				attempts++;
 			} catch (error) {
-				alert((error as any).toString());
+				alert(error);
 				console.error(`Error polling tryon status (attempt ${attempts + 1}):`, error);
 				throw error;
 			}
@@ -254,6 +270,33 @@ class TryonApiService {
 	}
 
 	/**
+	 * Get mask points for a human image
+	 */
+	async getMaskPoints(humanImage: File, timeout = 30, pollInterval = 0.5): Promise<MaskPointsResponse> {
+		try {
+			const formData = new FormData();
+			formData.append('human_image', humanImage);
+			formData.append('timeout', timeout.toString());
+			formData.append('poll_interval', pollInterval.toString());
+
+			const response = await axios.post<MaskPointsResponse>(`${API_BASE_URL}/get_garment_mask`, formData, {
+				headers: {
+					'Content-Type': 'multipart/form-data'
+				}
+			});
+
+			if (response.data.status !== 'SUCCESS') {
+				throw new Error('Failed to get mask points');
+			}
+
+			return response.data;
+		} catch (error) {
+			console.error('Error getting mask points:', error);
+			throw new Error('Failed to get mask points');
+		}
+	}
+
+	/**
 	 * Convert base64 image to blob
 	 */
 	base64ToBlob(base64: string, mimeType = 'image/jpeg'): Blob {
@@ -302,6 +345,23 @@ class TryonApiService {
 			alert('Failed to fetch product size chart');
 			console.error('Error fetching product size chart:', error);
 			throw error;
+		}
+	}
+
+	async verifyAccessCode(accessCode: number): Promise<boolean> {
+		try {
+			const formData = new FormData();
+			formData.append('access_code', accessCode.toString());
+
+			const response = await axios.post(`${API_BASE_URL}/verify_code`, formData, {
+				headers: {
+					'Content-Type': 'multipart/form-data'
+				}
+			});
+			return response.data.status;
+		} catch (error) {
+			console.error('Error verifying access code:', error);
+			throw new Error('Failed to verify access code');
 		}
 	}
 }

@@ -43,7 +43,13 @@
 		"sizeGuide": "Size guide",
 		"upper": "Upper",
 		"lower": "Lower",
-		"bestFit": "Best fit: {{size}}"
+		"bestFit": "Best fit: {{size}}",
+		"processing": "Processing...",
+		"accessDemoModalTitle": "Access Demo Website",
+		"enterYourAccessCode": "Enter Your Access Code",
+		"access": "Access",
+		"accessDemoModalDescription": "This demo requires a special access code. If you don't have one, please <a>contact us</a>.",
+		"accessDemoModalError": "Invalid code. Please try again or request a new one"
 	},
 	"getUserModelImage": {
 		"steps": {
@@ -56,12 +62,12 @@
 				"instruction": "Position your camera straight and at waist height. Carefully step back into the space behind you until you can see your entire body on the screen."
 			},
 			"sideView": {
-				"title": "Scan side view",
-				"instruction": "Rotate 90° and stand straight, matching the pose guide."
+				"title": "Take photo: Side view",
+				"instruction": "Align your body with the pose guide"
 			},
 			"frontView": {
-				"title": "Front View",
-				"instruction": "Stand upright, face the camera, and match the pose guide."
+				"title": "Take photo: Front view",
+				"instruction": "Align your body with the pose guide"
 			},
 			"result": {
 				"title": "Result",

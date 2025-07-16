@@ -61,6 +61,9 @@ interface ProductContextType {
 	clearTryonCache: () => void;
 	tryonImage: string | null;
 	setTryonImage: (image: string | null) => void;
+	// Photo management
+	refreshTrigger: number;
+	handlePhotoTaken: () => void;
 }
 
 const ProductContext = createContext<ProductContextType | undefined>(undefined);
@@ -79,8 +82,14 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
 	const [isTryonLoading, setTryonLoading] = useState(false);
 	const [isShowSizeGuide, setIsShowSizeGuide] = useState(false);
 	const [sizeChart, setSizeChart] = useState<File | null>(null);
+	const [refreshTrigger, setRefreshTrigger] = useState(0);
 	// Permanent cache for tryon results
 	const tryonCache = useRef<Map<string, TryonResult>>(new Map());
+
+	// Handle photo taken - increment refreshTrigger to trigger refresh in CameraPoseButton
+	const handlePhotoTaken = () => {
+		setRefreshTrigger((prev) => prev + 1);
+	};
 
 	// Helper function to create cache key
 	const createCacheKey = (params: {
@@ -221,7 +230,9 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
 		setCachedTryonResult,
 		clearTryonCache,
 		tryonImage,
-		setTryonImage
+		setTryonImage,
+		refreshTrigger,
+		handlePhotoTaken
 	};
 
 	return <ProductContext.Provider value={value}>{children}</ProductContext.Provider>;

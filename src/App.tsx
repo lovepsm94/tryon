@@ -1,10 +1,14 @@
+import React from 'react';
 import { ResponsiveProvider } from '@/contexts/ResponsiveContext';
+import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import About from '@/pages/About';
 import Home from '@/pages/home';
 import Men from '@/pages/Men';
 import Product from '@/pages/product';
 import Women from '@/pages/Women';
 import { createBrowserRouter, RouterProvider, ScrollRestoration, Outlet } from 'react-router';
+import { initializeApp } from '@/utils/initializeApp';
+import AccessDemoModal from '@/components/AccessDemoModal';
 
 const RootLayout = () => (
 	<>
@@ -42,12 +46,33 @@ const router = createBrowserRouter([
 	}
 ]);
 
-function App() {
-	console.log('qưeqwe');
+const AppContent = () => {
+	const { isAuthenticated, isLoading } = useAuth();
+
+	if (isLoading) {
+		return null;
+	}
+
 	return (
-		<ResponsiveProvider>
+		<>
+			{!isAuthenticated && <AccessDemoModal />}
 			<RouterProvider router={router} />
-		</ResponsiveProvider>
+		</>
+	);
+};
+
+function App() {
+	// Initialize app when component mounts
+	React.useEffect(() => {
+		initializeApp();
+	}, []);
+
+	return (
+		<AuthProvider>
+			<ResponsiveProvider>
+				<AppContent />
+			</ResponsiveProvider>
+		</AuthProvider>
 	);
 }
 

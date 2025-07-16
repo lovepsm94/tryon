@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import NumberInput from '@/components/ui/NumberInput';
 import { localStorageManager } from '@/utils/localStorageManager';
+import cn from '@/utils/cn';
 
 interface WeightHeightInputProps {
 	onCancel: () => void;
@@ -10,9 +11,11 @@ interface WeightHeightInputProps {
 
 function WeightHeightInput({ onCancel, onContinue }: WeightHeightInputProps) {
 	const { t } = useTranslation();
-	const [weight, setWeight] = useState<number>(50);
-	const [height, setHeight] = useState<number>(165);
+	const [weight, setWeight] = useState<number>();
+	const [height, setHeight] = useState<number>();
 	const [isSaving, setIsSaving] = useState(false);
+
+	const isInvalid = !weight || !height;
 
 	// Load existing user data when component mounts
 	useEffect(() => {
@@ -36,6 +39,20 @@ function WeightHeightInput({ onCancel, onContinue }: WeightHeightInputProps) {
 			// Show error or validation message
 			return;
 		}
+		let _weight = weight;
+		let _height = height;
+		if (weight < 30) {
+			_weight = 30;
+		}
+		if (weight > 140) {
+			_weight = 140;
+		}
+		if (height < 140) {
+			_height = 140;
+		}
+		if (height > 200) {
+			_height = 200;
+		}
 
 		try {
 			setIsSaving(true);
@@ -46,15 +63,15 @@ function WeightHeightInput({ onCancel, onContinue }: WeightHeightInputProps) {
 			if (existingUserData) {
 				// Update existing user data
 				localStorageManager.updateUserData({
-					weight,
-					height
+					weight: _weight,
+					height: _height
 				});
 				console.log('User data updated in localStorage');
 			} else {
 				// Create new user data
 				localStorageManager.saveUserData({
-					weight,
-					height
+					weight: _weight,
+					height: _height
 				});
 				console.log('User data saved to localStorage');
 			}
@@ -70,22 +87,26 @@ function WeightHeightInput({ onCancel, onContinue }: WeightHeightInputProps) {
 
 	return (
 		<div className='h-full flex flex-col items-center p-6'>
-			<p className='font-medium text-[24px] leading-[32px] text-black-900 text-center'>
+			<p className='font-medium text-[22px] leading-[32px] text-black-900 text-center'>
 				{t('common.enterYourWeightAndHeight')}
 			</p>
 			<NumberInput
-				onChange={(value) => setWeight(value || 50)}
+				onChange={(value) => setWeight(value || undefined)}
 				className='mt-6 w-full md:mt-10'
 				placeholder={t('common.enterWeight')}
 				unit='kg'
-				defaultValue={weight}
+				max={140}
+				min={30}
+				value={weight}
 			/>
 			<NumberInput
-				onChange={(value) => setHeight(value || 165)}
+				onChange={(value) => setHeight(value || undefined)}
 				className='mt-6  w-full'
 				placeholder={t('common.enterHeight')}
 				unit='cm'
-				defaultValue={height}
+				min={140}
+				max={200}
+				value={height}
 			/>
 			<div className='grid grid-cols-2 w-full mt-6 gap-4'>
 				<button
@@ -96,9 +117,9 @@ function WeightHeightInput({ onCancel, onContinue }: WeightHeightInputProps) {
 					{t('common.cancel')}
 				</button>
 				<button
-					className='h-[52px] bg-gradient text-white border-0 outline-0'
+					className={cn('h-[52px] text-white border-0 outline-0', isInvalid ? 'bg-[#808191]' : 'bg-gradient')}
 					onClick={handleContinue}
-					disabled={isSaving}
+					disabled={isSaving || isInvalid}
 				>
 					{t('common.continue')}
 				</button>

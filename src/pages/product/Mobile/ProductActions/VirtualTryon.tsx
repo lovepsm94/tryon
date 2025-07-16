@@ -24,7 +24,8 @@ function VirtualTryon() {
 		setTryonLoading,
 		setSelectedSize,
 		setTryonImage,
-		currentProduct
+		currentProduct,
+		handlePhotoTaken
 	} = useProduct();
 	const [isOpen, setIsOpen] = useState(false);
 	const [currentStep, setCurrentStep] = useState<VirtualTryonStep | null>(null);
@@ -38,6 +39,10 @@ function VirtualTryon() {
 			}, 200);
 		} else if (currentStep === 'prepare-photo') {
 			setCurrentStep(null);
+			// Call onPhotoTaken when photo is taken successfully
+			if (handlePhotoTaken) {
+				handlePhotoTaken();
+			}
 			setTimeout(async () => {
 				startTryonProcess();
 			}, 200);
@@ -282,7 +287,7 @@ function VirtualTryon() {
 				disabled={isTryonLoading}
 			>
 				<span className='flex items-center justify-center gap-2'>
-					<TryonLoading isLoading={isTryonLoading} />
+					<TryonLoading />
 					{isTryonLoading ? (
 						<span className='flex items-center justify-center gap-2'>{t('common.pleaseWait')}</span>
 					) : (

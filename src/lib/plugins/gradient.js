@@ -12,12 +12,12 @@ module.exports = plugin(function ({ addUtilities }) {
 			position: 'relative',
 			border: '2px solid transparent',
 			background:
-				'linear-gradient(white, white) padding-box, linear-gradient(-45deg, #FFA63D, #FF3D77, #338AFF, #3CF0C5) border-box',
+				'linear-gradient(white, white) padding-box, linear-gradient(-45deg, #2E43EF,#6926E1, #2E43EF, #6926E1) border-box',
 			'background-size': '600% 600%',
 			animation: 'gradient-move 5s linear infinite'
 		},
 		'.bg-gradient': {
-			background: 'linear-gradient(-45deg, #FFA63D, #FF3D77, #338AFF, #3CF0C5)',
+			background: 'linear-gradient(-45deg, #2E43EF,#6926E1, #2E43EF, #6926E1)',
 			'background-size': '600% 600%',
 			animation: 'bg-gradient-move 10s ease-in-out infinite'
 		},

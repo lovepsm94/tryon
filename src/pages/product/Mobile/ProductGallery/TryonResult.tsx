@@ -1,8 +1,8 @@
 import { ReactComponent as CloseIcon } from '@/assets/close.svg';
-import { TryonLoading } from '@/components/ui';
 import Switch from '@/components/ui/Switch';
 import { useProduct } from '@/contexts/ProductContext';
 import SizeGuide from '@/pages/product/Mobile/ProductGallery/SizeGuide';
+import TryonMaskLoading from '@/pages/product/Mobile/ProductGallery/TryonMaskLoading';
 import { useTranslation } from 'react-i18next';
 
 interface TryonResultProps {
@@ -52,7 +52,7 @@ function TryonResult({ onClose }: TryonResultProps) {
 	};
 
 	return (
-		<div className='relative h-[457px] md:h-full bg-gray-50 overflow-hidden'>
+		<div className='relative h-[550px] md:h-full bg-gray-50 overflow-hidden'>
 			{/* Header with close button */}
 			<div className='absolute top-4 right-4 z-50'>
 				<button
@@ -76,21 +76,14 @@ function TryonResult({ onClose }: TryonResultProps) {
 			{isShowSizeGuide && <SizeGuide />}
 
 			{/* Loading overlay */}
-			{isTryonLoading && (
-				<div className='absolute inset-0 bg-gradient opacity-90 flex items-center justify-center z-[60]'></div>
-			)}
-			{isTryonLoading && (
-				<div className='absolute inset-0 rounded-lg p-6 flex flex-col items-center gap-4 justify-center text-white z-[60]'>
-					<TryonLoading isLoading={true} />
-					<p className='text-gray-700 font-medium text-center'>{t('common.processingYourVirtualTryOn')}</p>
-				</div>
-			)}
+			{isTryonLoading && <TryonMaskLoading />}
+
 			{tryonResult && !isTryonLoading && (
 				<div
-					className='absolute bottom-4 right-4 p-2 z-20 bg-white text-dark text-[13px] font-semibold cursor-pointer flex gap-2 items-center rounded-xl'
+					className='absolute bottom-4 right-4 p-[6px] md:p-2 z-20 bg-white text-dark cursor-pointer flex gap-2 items-center rounded-xl'
 					onClick={isShowSizeGuide ? handleHideSizeGuide : handleShowSizeGuide}
 				>
-					<p className='text-[14px] leading-[20px]'>{t('common.sizeGuide')}</p>
+					<p className='text-[12px] md:text-[14px] font-semibold'>{t('common.sizeGuide')}</p>
 					<Switch value={isShowSizeGuide} />
 				</div>
 			)}

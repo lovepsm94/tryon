@@ -210,6 +210,14 @@ export function drawBox(
 	bgGrad.addColorStop(0.0984, 'rgba(182, 183, 255, 0.4)');
 	bgGrad.addColorStop(0.9992, 'rgba(255, 255, 255, 0.4)');
 
+	const mobileLabelFontSize = 10;
+	const pcLabelFontSize = 14;
+	const mobileValueFontSize = 12;
+	const pcValueFontSize = 16;
+
+	const labelFontSize = isMobile ? mobileLabelFontSize : pcLabelFontSize;
+	const valueFontSize = isMobile ? mobileValueFontSize : pcValueFontSize;
+
 	ctx.save();
 	ctx.fillStyle = bgGrad;
 	ctx.beginPath();
@@ -232,12 +240,12 @@ export function drawBox(
 	// Draw text with scaled font size
 	ctx.textAlign = 'center';
 	ctx.fillStyle = '#1B1D21B2';
-	ctx.font = `${10 / scale}px Be Vietnam Pro`;
-	const labelOffset = isMobile ? 6 : 7; // 6px for mobile, 12px for PC
+	ctx.font = `${labelFontSize / scale}px Be Vietnam Pro`;
+	const labelOffset = isMobile ? 4 : 7; // 6px for mobile, 12px for PC
 	ctx.fillText(label, x + width / 2, y + height / 2 - labelOffset / scale);
 	ctx.fillStyle = '#1B1D21';
-	ctx.font = `${14 / scale}px Be Vietnam Pro`;
-	const valueOffset = isMobile ? 14 : 15; // 14px for mobile, 20px for PC
+	ctx.font = `${valueFontSize / scale}px Be Vietnam Pro`;
+	const valueOffset = isMobile ? 12 : 15; // 14px for mobile, 20px for PC
 	ctx.fillText(value, x + width / 2, y + height / 2 + valueOffset / scale);
 	ctx.restore();
 }

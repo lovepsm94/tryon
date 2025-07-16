@@ -39,7 +39,7 @@ function drawResultBoxes(ctx: CanvasRenderingContext2D, boxes: ResultBox[], scal
 	boxes.forEach(({ x, y, label, value, start, isUpper }) => {
 		// If there's a start point (end of path), draw connecting line
 		if (start) {
-			drawConnectingLine(ctx, start, x, y, boxWidth, boxHeight, isUpper || false, isMobile ? 8 : 24, scale);
+			drawConnectingLine(ctx, start, x, y, boxWidth, boxHeight, isUpper || false, isMobile ? 8 : 16, scale);
 		}
 
 		// Draw box
@@ -383,19 +383,19 @@ function SizeGuide() {
 				containerRef={containerRef}
 				selectedSize={selectedSize}
 			/>
-			<div className='absolute bottom-0 left-0 w-fit py-2 px-4 rounded-tr-[16px] border-gradient z-[60px] flex flex-col gap-4 bg-white -translate-y-full'>
+			<div className='absolute bottom-0 left-0 w-fit py-[6px] px-2 md:py-2 md:px-4 rounded-tr-[16px] border-gradient z-[60px] flex flex-col gap-2 md:gap-4 bg-white -translate-y-full'>
 				{tryonResult.upperFitData && (
 					<div className='flex flex-col gap-[2px]'>
-						<p className='font-medium text-[14px] leading-[20px] text-[#808191]'>{t('common.upper')}</p>
-						<p className='font-medium text-[14px] leading-[20px] text-dark'>
+						<p className='font-medium text-[12px] md:text-[14px]  text-[#808191]'>{t('common.upper')}</p>
+						<p className='font-medium text-[14px] md:text-[16px]  text-dark'>
 							{t('common.bestFit', { size: tryonResult.upperFitData.size })}
 						</p>
 					</div>
 				)}
 				{tryonResult.lowerFitData && (
 					<div className='flex flex-col gap-[2px]'>
-						<p className='font-medium text-[14px] leading-[20px] text-[#808191]'>{t('common.lower')}</p>
-						<p className='font-medium text-[14px] leading-[20px] text-dark'>
+						<p className='font-medium text-[12px] md:text-[14px] text-[#808191]'>{t('common.lower')}</p>
+						<p className='font-medium text-[14px] md:text-[16px] text-dark'>
 							{t('common.bestFit', { size: tryonResult.lowerFitData.size })}
 						</p>
 					</div>

@@ -7,18 +7,42 @@ import { localStorageManager } from '@/utils/localStorageManager';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import PreparePhoto from '@/pages/product/Mobile/ProductActions/PreparePhoto';
+import { useProduct } from '@/contexts/ProductContext';
 
 const CameraPoseButton: React.FC = () => {
+	const { refreshTrigger } = useProduct();
 	const [openDrawer, setOpenDrawer] = React.useState(false);
 	const [frontImages, setFrontImages] = React.useState<UserImageDataWithUrl[]>([]);
 	const [showPreparePhoto, setShowPreparePhoto] = React.useState(false);
 	const [selectedImageId, setSelectedImageId] = React.useState<number | null>(null);
 
 	React.useEffect(() => {
+		// Load images when component mounts
 		indexedDBManager.getAllUserImages().then((images) => {
 			setFrontImages(images.filter((img) => img.type === 'front'));
 		});
+	}, []);
+
+	// Refresh images when drawer opens
+	React.useEffect(() => {
+		if (openDrawer) {
+			indexedDBManager.getAllUserImages().then((images) => {
+				setFrontImages(images.filter((img) => img.type === 'front'));
+			});
+		}
 	}, [openDrawer]);
+
+	// Refresh images when refreshTrigger changes
+	React.useEffect(() => {
+		if (refreshTrigger) {
+			// Add a small delay to ensure IndexedDB has been updated
+			setTimeout(() => {
+				indexedDBManager.getAllUserImages().then((images) => {
+					setFrontImages(images.filter((img) => img.type === 'front'));
+				});
+			}, 100);
+		}
+	}, [refreshTrigger]);
 
 	// Load selected image ID from localStorage on component mount
 	React.useEffect(() => {
@@ -76,6 +100,10 @@ const CameraPoseButton: React.FC = () => {
 		localStorageManager.updateUserData({ selectedFrontImageId: imageId });
 	};
 
+	if (frontImages.length === 0) {
+		return null;
+	}
+
 	return (
 		<>
 			{!openDrawer && (
@@ -106,7 +134,7 @@ const CameraPoseButton: React.FC = () => {
 					</SwiperSlide>
 
 					{/* Existing front images */}
-					{frontImages.map((img, idx) => (
+					{frontImages.reverse().map((img, idx) => (
 						<SwiperSlide key={img.id || idx} className='!w-[120px] !h-[155px]'>
 							<div
 								className={`w-full h-full flex-shrink-0 flex items-center justify-center relative cursor-pointer ${
@@ -139,7 +167,11 @@ const CameraPoseButton: React.FC = () => {
 
 			{/* PreparePhoto Modal */}
 			{showPreparePhoto && (
-				<PreparePhoto onCancel={handlePreparePhotoCancel} onContinue={handlePreparePhotoContinue} />
+				<PreparePhoto
+					onCancel={handlePreparePhotoCancel}
+					onContinue={handlePreparePhotoContinue}
+					showPoseSelection={false}
+				/>
 			)}
 		</>
 	);

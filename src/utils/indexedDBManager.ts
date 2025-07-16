@@ -18,6 +18,15 @@ export interface UserData {
 	timestamp: number;
 }
 
+export interface MaskPointsData {
+	id?: number;
+	imageId: number; // Reference to the user image
+	upper: number[][];
+	lower: number[][];
+	full: number[][];
+	timestamp: number;
+}
+
 class IndexedDBManager {
 	private dbName = 'TryOnAppDB';
 	private version = 1;
@@ -25,7 +34,8 @@ class IndexedDBManager {
 
 	// Store names
 	private readonly STORES = {
-		USER_IMAGES: 'userImages'
+		USER_IMAGES: 'userImages',
+		MASK_POINTS: 'maskPoints'
 	} as const;
 
 	/**
@@ -36,25 +46,40 @@ class IndexedDBManager {
 			const request = indexedDB.open(this.dbName, this.version);
 
 			request.onerror = () => {
+				console.error('Failed to open IndexedDB:', request.error);
 				reject(new Error('Failed to open IndexedDB'));
 			};
 
 			request.onsuccess = () => {
 				this.db = request.result;
+				console.log('IndexedDB initialized successfully');
 				resolve();
 			};
 
 			request.onupgradeneeded = (event) => {
+				console.log('IndexedDB upgrade needed, version:', this.version);
 				const db = (event.target as IDBOpenDBRequest).result;
 
 				// Create userImages store
 				if (!db.objectStoreNames.contains(this.STORES.USER_IMAGES)) {
+					console.log('Creating userImages store');
 					const imageStore = db.createObjectStore(this.STORES.USER_IMAGES, {
 						keyPath: 'id',
 						autoIncrement: true
 					});
 					imageStore.createIndex('type', 'type', { unique: false });
 					imageStore.createIndex('timestamp', 'timestamp', { unique: false });
+				}
+
+				// Create maskPoints store
+				if (!db.objectStoreNames.contains(this.STORES.MASK_POINTS)) {
+					console.log('Creating maskPoints store');
+					const maskStore = db.createObjectStore(this.STORES.MASK_POINTS, {
+						keyPath: 'id',
+						autoIncrement: true
+					});
+					maskStore.createIndex('timestamp', 'timestamp', { unique: false });
+					maskStore.createIndex('imageId', 'imageId', { unique: false });
 				}
 			};
 		});
@@ -66,6 +91,34 @@ class IndexedDBManager {
 	private async ensureDB(): Promise<void> {
 		if (!this.db) {
 			await this.init();
+		}
+	}
+
+	/**
+	 * Check if database is properly initialized with all required stores
+	 */
+	async checkDatabaseHealth(): Promise<boolean> {
+		try {
+			await this.ensureDB();
+
+			if (!this.db) {
+				return false;
+			}
+
+			// Check if all required stores exist
+			const hasUserImages = this.db.objectStoreNames.contains(this.STORES.USER_IMAGES);
+			const hasMaskPoints = this.db.objectStoreNames.contains(this.STORES.MASK_POINTS);
+
+			console.log('Database health check:', {
+				hasUserImages,
+				hasMaskPoints,
+				storeNames: Array.from(this.db.objectStoreNames)
+			});
+
+			return hasUserImages && hasMaskPoints;
+		} catch (error) {
+			console.error('Database health check failed:', error);
+			return false;
 		}
 	}
 
@@ -104,8 +157,122 @@ class IndexedDBManager {
 			};
 
 			request.onerror = (e) => {
-				alert(JSON.stringify([e]));
+				console.error('Failed to save image to IndexedDB:', e);
 				reject(new Error('Failed to save image to IndexedDB'));
+			};
+		});
+	}
+
+	/**
+	 * Save mask points to IndexedDB
+	 */
+	async saveMaskPoints(imageId: number, upper: number[][], lower: number[][], full: number[][]): Promise<number> {
+		await this.ensureDB();
+
+		return new Promise((resolve, reject) => {
+			if (!this.db) {
+				reject(new Error('Database not initialized'));
+				return;
+			}
+
+			const transaction = this.db.transaction([this.STORES.MASK_POINTS], 'readwrite');
+			const store = transaction.objectStore(this.STORES.MASK_POINTS);
+
+			const data: MaskPointsData = {
+				imageId,
+				upper,
+				lower,
+				full,
+				timestamp: Date.now()
+			};
+
+			const request = store.add(data);
+
+			request.onsuccess = () => {
+				resolve(request.result as number);
+			};
+
+			request.onerror = (e) => {
+				console.error('Failed to save mask points to IndexedDB:', e);
+				reject(new Error('Failed to save mask points to IndexedDB'));
+			};
+		});
+	}
+
+	/**
+	 * Get latest mask points from IndexedDB
+	 */
+	async getLatestMaskPoints(): Promise<MaskPointsData | null> {
+		await this.ensureDB();
+
+		return new Promise((resolve, reject) => {
+			if (!this.db) {
+				reject(new Error('Database not initialized'));
+				return;
+			}
+
+			const transaction = this.db.transaction([this.STORES.MASK_POINTS], 'readonly');
+			const store = transaction.objectStore(this.STORES.MASK_POINTS);
+			const index = store.index('timestamp');
+
+			const request = index.getAll();
+
+			request.onsuccess = () => {
+				const maskPoints = request.result as MaskPointsData[];
+				if (maskPoints.length === 0) {
+					resolve(null);
+					return;
+				}
+
+				// Get the most recent mask points
+				const latestMaskPoints = maskPoints.reduce((latest, current) =>
+					current.timestamp > latest.timestamp ? current : latest
+				);
+
+				resolve(latestMaskPoints);
+			};
+
+			request.onerror = () => {
+				reject(new Error('Failed to get latest mask points from IndexedDB'));
+			};
+		});
+	}
+
+	/**
+	 * Get mask points by image ID
+	 */
+	async getMaskPointsByImageId(imageId: number): Promise<MaskPointsData | null> {
+		await this.ensureDB();
+
+		return new Promise((resolve, reject) => {
+			if (!this.db) {
+				reject(new Error('Database not initialized'));
+				return;
+			}
+
+			const transaction = this.db.transaction([this.STORES.MASK_POINTS], 'readonly');
+			const store = transaction.objectStore(this.STORES.MASK_POINTS);
+			const index = store.index('imageId');
+
+			const request = index.getAll(imageId);
+
+			request.onsuccess = () => {
+				const maskPoints = request.result as MaskPointsData[];
+				if (maskPoints.length === 0) {
+					resolve(null);
+					return;
+				}
+
+				// Return the most recent mask points for this image ID
+				const latestMaskPoints = maskPoints.reduce((latest, current) =>
+					current.timestamp > latest.timestamp ? current : latest
+				);
+
+				resolve(latestMaskPoints);
+			};
+
+			request.onerror = () => {
+				reject(new Error('Failed to get mask points from IndexedDB'));
 			};
 		});
 	}
@@ -333,7 +500,7 @@ class IndexedDBManager {
 	}
 
 	/**
-	 * Clear all data (images and user data)
+	 * Clear all data (images and mask points)
 	 */
 	async clearAllData(): Promise<void> {
 		await this.ensureDB();
@@ -344,27 +511,56 @@ class IndexedDBManager {
 				return;
 			}
 
-			const transaction = this.db.transaction([this.STORES.USER_IMAGES], 'readwrite');
+			// Check which stores actually exist
+			const availableStores = Array.from(this.db.objectStoreNames);
+			console.log('Available stores for clearing:', availableStores);
 
-			const imageStore = transaction.objectStore(this.STORES.USER_IMAGES);
+			const storesToClear = [];
 
-			const imageRequest = imageStore.clear();
+			// Only include stores that actually exist
+			if (availableStores.includes(this.STORES.USER_IMAGES)) {
+				storesToClear.push(this.STORES.USER_IMAGES);
+			}
+
+			if (availableStores.includes(this.STORES.MASK_POINTS)) {
+				storesToClear.push(this.STORES.MASK_POINTS);
+			}
+
+			if (storesToClear.length === 0) {
+				console.log('No stores to clear');
+				resolve();
+				return;
+			}
+
+			const transaction = this.db.transaction(storesToClear, 'readwrite');
+			const requests: IDBRequest[] = [];
+
+			// Clear each available store
+			storesToClear.forEach((storeName) => {
+				const store = transaction.objectStore(storeName);
+				const request = store.clear();
+				requests.push(request);
+			});
 
 			let completed = 0;
-			const totalRequests = 1;
+			const totalRequests = requests.length;
 
 			const checkComplete = () => {
+				console.log('checkComplete', completed);
 				completed++;
 				if (completed === totalRequests) {
+					console.log('All stores cleared successfully');
 					resolve();
 				}
 			};
 
-			imageRequest.onsuccess = checkComplete;
-
-			imageRequest.onerror = () => {
-				reject(new Error('Failed to clear images from IndexedDB'));
-			};
+			requests.forEach((request) => {
+				request.onsuccess = checkComplete;
+				request.onerror = (e: Event) => {
+					console.error('Failed to clear store:', e);
+					reject(new Error('Failed to clear data from IndexedDB'));
+				};
+			});
 		});
 	}
 
@@ -389,10 +585,79 @@ class IndexedDBManager {
 	}
 
 	/**
+	 * Debug method to check database status
+	 */
+	async debugDatabaseStatus(): Promise<void> {
+		await this.ensureDB();
+
+		if (!this.db) {
+			console.log('Database not initialized');
+			return;
+		}
+
+		const storeNames = Array.from(this.db.objectStoreNames);
+		console.log('Available stores:', storeNames);
+
+		// Check user images
+		if (storeNames.includes(this.STORES.USER_IMAGES)) {
+			const transaction = this.db.transaction([this.STORES.USER_IMAGES], 'readonly');
+			const store = transaction.objectStore(this.STORES.USER_IMAGES);
+			const countRequest = store.count();
+
+			countRequest.onsuccess = () => {
+				console.log('User images count:', countRequest.result);
+			};
+		}
+
+		// Check mask points
+		if (storeNames.includes(this.STORES.MASK_POINTS)) {
+			const transaction = this.db.transaction([this.STORES.MASK_POINTS], 'readonly');
+			const store = transaction.objectStore(this.STORES.MASK_POINTS);
+			const countRequest = store.count();
+
+			countRequest.onsuccess = () => {
+				console.log('Mask points count:', countRequest.result);
+			};
+		}
+	}
+
+	/**
 	 * Revoke object URL to free memory
 	 */
 	revokeObjectUrl(imageUrl: string): void {
 		URL.revokeObjectURL(imageUrl);
+	}
+
+	/**
+	 * Force recreate the database (useful for fixing corrupted databases)
+	 */
+	async forceRecreateDatabase(): Promise<void> {
+		// Close existing connection
+		if (this.db) {
+			this.db.close();
+			this.db = null;
+		}
+
+		// Delete the existing database
+		return new Promise((resolve, reject) => {
+			const deleteRequest = indexedDB.deleteDatabase(this.dbName);
+
+			deleteRequest.onsuccess = () => {
+				console.log('Old database deleted successfully');
+				// Reinitialize the database
+				this.init()
+					.then(() => {
+						console.log('Database recreated successfully');
+						resolve();
+					})
+					.catch(reject);
+			};
+
+			deleteRequest.onerror = () => {
+				console.error('Failed to delete old database:', deleteRequest.error);
+				reject(new Error('Failed to delete old database'));
+			};
+		});
 	}
 }
 
@@ -400,4 +665,23 @@ class IndexedDBManager {
 export const indexedDBManager = new IndexedDBManager();
 
 // Initialize the database when the module is loaded
-indexedDBManager.init().catch(console.error);
+indexedDBManager
+	.init()
+	.then(() => {
+		// Check database health after initialization
+		indexedDBManager.checkDatabaseHealth().then((isHealthy) => {
+			if (!isHealthy) {
+				console.warn('Database health check failed, attempting to recreate...');
+				indexedDBManager.forceRecreateDatabase().catch((recreateError) => {
+					console.error('Failed to recreate IndexedDB:', recreateError);
+				});
+			}
+		});
+	})
+	.catch((error) => {
+		console.error('Failed to initialize IndexedDB:', error);
+		// If initialization fails, try to recreate the database
+		indexedDBManager.forceRecreateDatabase().catch((recreateError) => {
+			console.error('Failed to recreate IndexedDB:', recreateError);
+		});
+	});

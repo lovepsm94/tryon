@@ -10,7 +10,7 @@ interface CountdownAnimationProps {
 }
 
 const CountdownAnimation: React.FC<CountdownAnimationProps> = ({
-	initialCount = 3,
+	initialCount = 2,
 	onComplete,
 	className = '',
 	onCheckShow
@@ -87,7 +87,7 @@ const CountdownAnimation: React.FC<CountdownAnimationProps> = ({
 									filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))'
 								}}
 							>
-								{count}
+								{count + 1}
 							</span>
 						) : showCheck ? (
 							<div className='relative'>
