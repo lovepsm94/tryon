@@ -2,6 +2,7 @@ import { ReactComponent as UserSwitch } from '@/assets/user-switch.svg';
 import Drawer from '@/components/ui/Drawer';
 import Modal from '@/components/ui/Modal';
 import { useResponsive } from '@/contexts/ResponsiveContext';
+import { useProduct } from '@/contexts/ProductContext';
 import { indexedDBManager } from '@/utils/indexedDBManager';
 import { localStorageManager } from '@/utils/localStorageManager';
 // import { localStorageManager } from '@/utils/localStorageManager';
@@ -13,6 +14,7 @@ function ClearPersonData() {
 	const { isMobile } = useResponsive();
 	const [isOpen, setIsOpen] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
+	const { handlePhotoTaken } = useProduct();
 
 	const handleContinue = async () => {
 		try {
@@ -20,6 +22,7 @@ function ClearPersonData() {
 			// Clear IndexedDB data (images)
 			await indexedDBManager.clearAllData();
 			localStorageManager.clearUserData();
+			handlePhotoTaken();
 		} catch (error) {
 			console.error('Failed to clear user data:', error);
 			// You might want to show an error message to the user here

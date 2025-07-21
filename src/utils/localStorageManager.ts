@@ -2,6 +2,7 @@ export interface UserData {
 	weight?: number;
 	height?: number;
 	selectedFrontImageId?: number | null;
+	type?: 'model' | 'user';
 	timestamp: number;
 }
 

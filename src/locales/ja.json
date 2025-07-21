@@ -10,7 +10,7 @@
 		"footerRight": "<a>{{company}}</a> の製品です",
 		"size": "サイズ",
 		"virtualTryOn": "バーチャル試着",
-		"selectOtherPerson": "他の人物で試着する",
+		"selectOtherPerson": "人物データをクリア",
 		"switchUserToTryOn": "試着ユーザーを切り替え中",
 		"switchUserToTryOnDescription": "別の人物を選択すると、以前の試着データはすべて削除されます。",
 		"switchUserToTryOnWarning": "本当に続けますか？",
@@ -40,16 +40,16 @@
 		"processingYourVirtualTryOn": "バーチャル試着を処理中です...",
 		"pleaseWait": "しばらくお待ちください...",
 		"review": "レビュー（{{count}}件）",
-		"sizeGuide": "Size guide",
-		"upper": "Upper",
-		"lower": "Lower",
-		"bestFit": "Best fit: {{size}}",
-		"processing": "Processing...",
-		"accessDemoModalTitle": "Access Demo Website",
-		"enterYourAccessCode": "Enter Your Access Code",
-		"access": "Access",
-		"accessDemoModalDescription": "This demo requires a special access code. If you don't have one, please <a>contact us</a>.",
-		"accessDemoModalError": "Invalid code. Please try again or request a new one"
+		"sizeGuide": "サイズガイド",
+		"upper": "トップス",
+		"lower": "ボトムス",
+		"bestFit": "最適なサイズ：{{size}}",
+		"processing": "処理中...",
+		"accessDemoModalTitle": "デモサイトにアクセス",
+		"enterYourAccessCode": "アクセスコードを入力してください",
+		"access": "アクセス",
+		"accessDemoModalDescription": "このデモには特別なアクセスコードが必要です。お持ちでない場合は、<a>お問い合わせ</a>ください。",
+		"accessDemoModalError": "無効なコードです。もう一度お試しいただくか、新しいコードをリクエストしてください。"
 	},
 	"getUserModelImage": {
 		"steps": {
@@ -62,12 +62,12 @@
 				"instruction": "カメラを正面・腰の高さに配置し、全身が画面に収まるように後ろに下がってください。"
 			},
 			"sideView": {
-				"title": "Take photo: Side view",
-				"instruction": "Align your body with the pose guide"
+				"title": "写真を撮影：横向き",
+				"instruction": "ポーズガイドに体を合わせてください"
 			},
 			"frontView": {
-				"title": "Take photo: Front view",
-				"instruction": "Align your body with the pose guide"
+				"title": "写真を撮影：正面",
+				"instruction": "ポーズガイドに体を合わせてください"
 			},
 			"result": {
 				"title": "結果",
@@ -80,5 +80,14 @@
 				"continue": "続行"
 			}
 		}
+	},
+	"modalSelectModel": {
+		"title": "カメラが検出されません",
+		"description1": "バーチャル試着機能を自分の画像で使用するには、カメラ付きのデバイスをご利用ください。",
+		"description2": "または、以下の事前に選択されたモデルで試着をお試しください：",
+		"selectAModelToTryOn": "試着するモデルを選択",
+		"tryOnWithThisModel": "このモデルで試着する",
+		"height": "身長：",
+		"weight": "体重："
 	}
 }

@@ -10,7 +10,7 @@
 		"footerRight": " A product of <a>{{company}}</a>",
 		"size": "Size",
 		"virtualTryOn": "Virtual Try-On",
-		"selectOtherPerson": "Select other person to Try-On",
+		"selectOtherPerson": "Clear person data",
 		"switchUserToTryOn": "Switching user to Try-On",
 		"switchUserToTryOnDescription": "If you select another person to Try-On, all your previous Try-On data will be deleted.",
 		"switchUserToTryOnWarning": "Are you sure you want to continue?",
@@ -80,5 +80,14 @@
 				"continue": "Continue"
 			}
 		}
+	},
+	"modalSelectModel": {
+		"title": "Camera Not Detected",
+		"description1": "To use the Virtual Try-On feature with your own image, please use a device with a camera for the best experience.",
+		"description2": "Alternatively, you can try on this item on a pre-selected model below:",
+		"selectAModelToTryOn": "Select a model to Try-On",
+		"tryOnWithThisModel": "Try-On with this model",
+		"height": "Height:",
+		"weight": "Weight:"
 	}
 }

@@ -10,8 +10,49 @@ import { tryonApiService, TryonRequest } from '@/utils/tryonApi';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import WeightHeightInput from './WeightHeightInput';
+import ModalSelectModel from '@/pages/product/Mobile/ProductActions/PreparePhoto/ModalSelectModel';
 
 type VirtualTryonStep = 'weight-height' | 'prepare-photo';
+
+async function checkWebcamAvailability(): Promise<{ available: boolean; state: string }> {
+	try {
+		// Check if getUserMedia is supported
+		if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
+			return { available: false, state: 'unsupported' };
+		}
+
+		// Enumerate devices to check for video input devices
+		const devices = await navigator.mediaDevices.enumerateDevices();
+		console.log(devices);
+		const videoDevices = devices.filter((device) => device.kind === 'videoinput');
+		console.log(videoDevices, 'videoDevices');
+
+		if (videoDevices.length === 0) {
+			return { available: false, state: 'no-devices' };
+		}
+
+		// Check camera permission status using permissions API
+		let permissionState = 'prompt'; // default state
+		try {
+			const permissionResult = await navigator.permissions.query({ name: 'camera' as PermissionName });
+			permissionState = permissionResult.state; // 'granted', 'denied', or 'prompt'
+			console.log('Camera permission state:', permissionState);
+		} catch (permissionError) {
+			console.warn('Permissions API not supported, falling back to device labels');
+			// Fallback: check if we have permission by looking at device labels
+			const hasPermission = videoDevices.some((device) => device.label && device.label.length > 0);
+			permissionState = hasPermission ? 'granted' : 'denied';
+		}
+
+		return {
+			available: true,
+			state: permissionState // Only permission states: 'granted', 'denied', 'prompt'
+		};
+	} catch (error) {
+		console.warn('Could not enumerate devices:', error);
+		return { available: false, state: 'error' };
+	}
+}
 
 function VirtualTryon() {
 	const { t } = useTranslation();
@@ -29,6 +70,7 @@ function VirtualTryon() {
 	} = useProduct();
 	const [isOpen, setIsOpen] = useState(false);
 	const [currentStep, setCurrentStep] = useState<VirtualTryonStep | null>(null);
+	const [isOpenModalSelectModel, setIsOpenModalSelectModel] = useState(false);
 
 	const { isMobile } = useResponsive();
 
@@ -59,6 +101,14 @@ function VirtualTryon() {
 			// Check if user images already exist
 			const frontImage = await indexedDBManager.getLatestUserImageBlob('front');
 			const sideImage = await indexedDBManager.getLatestUserImageBlob('side');
+
+			if (!isMobile && !frontImage && !sideImage) {
+				const webcamStatus = await checkWebcamAvailability();
+				if (!webcamStatus.available) {
+					setIsOpenModalSelectModel(true);
+					return;
+				}
+			}
 
 			// If both front and side images exist, start tryon process directly
 			if (frontImage && sideImage) {
@@ -287,7 +337,7 @@ function VirtualTryon() {
 				disabled={isTryonLoading}
 			>
 				<span className='flex items-center justify-center gap-2'>
-					<TryonLoading />
+					<TryonLoading isLoading={isTryonLoading} />
 					{isTryonLoading ? (
 						<span className='flex items-center justify-center gap-2'>{t('common.pleaseWait')}</span>
 					) : (
@@ -318,6 +368,11 @@ function VirtualTryon() {
 			)}
 
 			{currentStep === 'prepare-photo' && <PreparePhoto onCancel={handleCancel} onContinue={handleContinue} />}
+			<ModalSelectModel
+				isOpen={isOpenModalSelectModel}
+				onClose={() => setIsOpenModalSelectModel(false)}
+				onSelectModel={startTryonProcess}
+			/>
 		</>
 	);
 }

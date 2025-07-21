@@ -18,6 +18,10 @@ const CameraPoseButton: React.FC = () => {
 
 	React.useEffect(() => {
 		// Load images when component mounts
+		const userData = localStorageManager.getUserData();
+		if (userData && userData.type === 'model') {
+			return;
+		}
 		indexedDBManager.getAllUserImages().then((images) => {
 			setFrontImages(images.filter((img) => img.type === 'front'));
 		});
