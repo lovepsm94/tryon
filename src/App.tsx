@@ -41,6 +41,10 @@ const router = createBrowserRouter([
 			{
 				path: 'women',
 				element: <Women />
+			},
+			{
+				path: '*',
+				element: <Home />
 			}
 		]
 	}

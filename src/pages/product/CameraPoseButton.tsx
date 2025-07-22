@@ -174,7 +174,7 @@ const CameraPoseButton: React.FC = () => {
 				<PreparePhoto
 					onCancel={handlePreparePhotoCancel}
 					onContinue={handlePreparePhotoContinue}
-					showPoseSelection={false}
+					showPoseSelection={true}
 				/>
 			)}
 		</>
