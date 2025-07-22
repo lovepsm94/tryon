@@ -13,7 +13,7 @@ const SizeItem = ({
 	size: string;
 	isSelected: boolean;
 	onClick: () => void;
-	disabled: boolean;
+	disabled?: boolean;
 	isRecommended?: boolean;
 }) => {
 	return (
@@ -40,14 +40,14 @@ const SizeItem = ({
 
 function ChangeSize() {
 	const { t } = useTranslation();
-	const { selectedSize, setSelectedSize, isShowSizeGuide, currentProduct, tryonResult } = useProduct();
+	const { selectedSize, setSelectedSize, currentProduct, tryonResult } = useProduct();
 
 	const [sizes, setSizes] = useState<string[]>([]);
 
 	const handleSelectSize = (size: string) => {
-		if (!isShowSizeGuide) return;
 		setSelectedSize(size);
 	};
+
 	useEffect(() => {
 		if (!currentProduct) return;
 		const sizeChart = currentProduct.sizeChart;
@@ -81,7 +81,6 @@ function ChangeSize() {
 				{sizes.map((size) => (
 					<SizeItem
 						key={size}
-						disabled={!isShowSizeGuide}
 						size={size}
 						isRecommended={(() => {
 							if (currentProduct.type === 'upper') return tryonResult?.upperFitData?.size === size;
